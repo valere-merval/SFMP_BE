@@ -55,6 +55,15 @@ public final class DemoCatalogue {
     public record ContextualMessageView(String audience, String channel, String message, String timing) {
     }
 
+    public record TrafficView(String corridor, String status, String impact, String recommendation) {
+    }
+
+    public record ConsentView(String source, String status, String lastUpdated) {
+    }
+
+    public record InsightView(String model, String confidence, String insight, String action) {
+    }
+
     public record AuditView(String id, String action, String actor, String resource, LocalDateTime at) {
     }
 
@@ -217,6 +226,30 @@ public final class DemoCatalogue {
                 new AnalyticsView("ana_heatmap", "Heatmap density", "78", "%", "+9%"),
                 new AnalyticsView("ana_peak", "Demand peak accuracy", "91.3", "%", "+3.2%"),
                 new AnalyticsView("ana_route", "Adaptive route savings", "6.8", "min", "+1.4")
+        );
+    }
+
+    public static List<TrafficView> traffic() {
+        return List.of(
+                new TrafficView("Airport Corridor", "Heavy", "+18 min", "Reroute via Ring Road"),
+                new TrafficView("North Ring", "Moderate", "+7 min", "Keep shuttle loop short"),
+                new TrafficView("Stadium Access", "Clear", "0 min", "Proceed as planned")
+        );
+    }
+
+    public static List<ConsentView> gpsConsents() {
+        return List.of(
+                new ConsentView("Fan app", "Granted", "2027-05-29 16:50"),
+                new ConsentView("Driver app", "Granted", "2027-05-29 16:20"),
+                new ConsentView("Visitor web", "Pending", "2027-05-29 16:05")
+        );
+    }
+
+    public static List<InsightView> mlInsights() {
+        return List.of(
+                new InsightView("PeakNet v2", "93%", "Demand will spike near Gate 14 at 20:55", "Pre-position shuttles"),
+                new InsightView("RouteBrain v1", "89%", "Airport corridor traffic will slow in 15 minutes", "Switch to adaptive route A"),
+                new InsightView("CrowdFlow v3", "91%", "Walking inflow will exceed average by 12%", "Open extra pedestrian lane")
         );
     }
 
