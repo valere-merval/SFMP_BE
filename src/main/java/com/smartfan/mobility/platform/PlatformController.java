@@ -2,6 +2,7 @@ package com.smartfan.mobility.platform;
 
 import com.smartfan.mobility.shared.api.ApiResponse;
 import com.smartfan.mobility.shared.api.ModuleStatus;
+import com.smartfan.mobility.shared.demo.DemoCatalogue;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,12 @@ public class PlatformController {
                 new ModuleStatus("mobility", "ready", "Journey planning and transport options"),
                 new ModuleStatus("bookings", "ready", "Reservation workflow"),
                 new ModuleStatus("operations", "ready", "Operational dashboard"),
-                new ModuleStatus("admin", "ready", "Platform administration")), "Module inventory");
+                new ModuleStatus("admin", "ready", "Platform administration"),
+                new ModuleStatus("intelligence", "ready", "Version 3 forecasting and heatmaps")), "Module inventory");
+    }
+
+    @GetMapping("/roadmap")
+    public ApiResponse<List<DemoCatalogue.RoadmapView>> roadmap() {
+        return ApiResponse.ok(DemoCatalogue.roadmap(), "Delivery roadmap");
     }
 }

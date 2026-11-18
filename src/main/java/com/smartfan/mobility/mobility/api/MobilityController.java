@@ -15,4 +15,9 @@ public class MobilityController {
     public ApiResponse<List<DemoCatalogue.MobilityOptionView>> options() {
         return ApiResponse.ok(DemoCatalogue.mobilityOptions(), "Mobility options ready");
     }
+
+    @GetMapping("/routes")
+    public ApiResponse<List<DemoCatalogue.RouteAdaptationView>> routes() {
+        return ApiResponse.ok(DemoCatalogue.routeAdaptations(), "Adaptive routes ready");
+    }
 }

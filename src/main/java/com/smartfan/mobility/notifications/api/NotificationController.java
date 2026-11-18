@@ -15,4 +15,9 @@ public class NotificationController {
     public ApiResponse<List<DemoCatalogue.NotificationView>> list() {
         return ApiResponse.ok(DemoCatalogue.notifications(), "Notifications ready");
     }
+
+    @GetMapping("/contextual")
+    public ApiResponse<List<DemoCatalogue.ContextualMessageView>> contextual() {
+        return ApiResponse.ok(DemoCatalogue.contextualMessages(), "Contextual messaging ready");
+    }
 }

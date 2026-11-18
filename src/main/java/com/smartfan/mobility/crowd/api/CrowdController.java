@@ -15,4 +15,14 @@ public class CrowdController {
     public ApiResponse<List<DemoCatalogue.MetricView>> metrics() {
         return ApiResponse.ok(DemoCatalogue.crowdMetrics(), "Crowd metrics ready");
     }
+
+    @GetMapping("/heatmaps")
+    public ApiResponse<List<DemoCatalogue.HeatmapView>> heatmaps() {
+        return ApiResponse.ok(DemoCatalogue.heatmaps(), "Heatmaps ready");
+    }
+
+    @GetMapping("/peaks")
+    public ApiResponse<List<DemoCatalogue.DemandPeakView>> peaks() {
+        return ApiResponse.ok(DemoCatalogue.demandPeaks(), "Demand peaks ready");
+    }
 }

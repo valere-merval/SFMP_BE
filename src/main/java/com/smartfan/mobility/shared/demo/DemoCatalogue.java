@@ -40,6 +40,21 @@ public final class DemoCatalogue {
     public record AnalyticsView(String id, String label, String value, String unit, String trend) {
     }
 
+    public record RoadmapView(String version, String title, List<String> features) {
+    }
+
+    public record HeatmapView(String zone, String intensity, String trend, String recommendation) {
+    }
+
+    public record DemandPeakView(String window, String level, String action) {
+    }
+
+    public record RouteAdaptationView(String corridor, String change, String reason) {
+    }
+
+    public record ContextualMessageView(String audience, String channel, String message, String timing) {
+    }
+
     public record AuditView(String id, String action, String actor, String resource, LocalDateTime at) {
     }
 
@@ -132,6 +147,76 @@ public final class DemoCatalogue {
                 new AnalyticsView("ana_sessions", "Daily sessions", "24,880", "events", "+8.4%"),
                 new AnalyticsView("ana_clicks", "Plan Journey CTR", "41.2", "%", "+2.1%"),
                 new AnalyticsView("ana_bookings", "Booking conversion", "7.8", "%", "+0.9%")
+        );
+    }
+
+    public static List<RoadmapView> roadmap() {
+        return List.of(
+                new RoadmapView("Version 1", "MVP", List.of(
+                        "Gestion des événements",
+                        "Découverte des événements",
+                        "Planification des déplacements",
+                        "Carte interactive",
+                        "Réservation de transport démonstrative",
+                        "Dashboard opérationnel",
+                        "Collecte d'analytics",
+                        "Première démonstration prédictive")),
+                new RoadmapView("Version 2", "Pilot Platform", List.of(
+                        "Intégration des partenaires de transport",
+                        "Gestion des chauffeurs et véhicules",
+                        "Tracking GPS avec consentement",
+                        "Notifications intelligentes",
+                        "Intégration des données de trafic",
+                        "Prévisions de demande",
+                        "Gestion avancée des zones")),
+                new RoadmapView("Version 3", "Intelligent Mobility", List.of(
+                        "Machine Learning pour les prévisions",
+                        "Heatmaps de mobilité",
+                        "Détection des pics de demande",
+                        "Optimisation des points de ramassage",
+                        "Adaptation des itinéraires",
+                        "Communications contextuelles",
+                        "Analytics avancées"))
+        );
+    }
+
+    public static List<HeatmapView> heatmaps() {
+        return List.of(
+                new HeatmapView("Gate 12", "Critical", "Rising", "Open additional corridor"),
+                new HeatmapView("Gate 14", "High", "Stable", "Keep extra staff deployed"),
+                new HeatmapView("Metro Plaza", "Medium", "Falling", "Maintain current routing")
+        );
+    }
+
+    public static List<DemandPeakView> demandPeaks() {
+        return List.of(
+                new DemandPeakView("18:00-18:45", "High", "Pre-position shuttles"),
+                new DemandPeakView("20:55-21:40", "Critical", "Activate overflow lanes"),
+                new DemandPeakView("22:15-22:45", "Medium", "Open return-trip wave")
+        );
+    }
+
+    public static List<RouteAdaptationView> routeAdaptations() {
+        return List.of(
+                new RouteAdaptationView("Airport Corridor", "Reroute via Ring Road", "Traffic slowdown detected"),
+                new RouteAdaptationView("North Zone", "Shorten shuttle loop", "Demand concentrated at gates"),
+                new RouteAdaptationView("Fan Village", "Add walking guidance", "Pedestrian flow is under capacity")
+        );
+    }
+
+    public static List<ContextualMessageView> contextualMessages() {
+        return List.of(
+                new ContextualMessageView("Fans near Gate 12", "Push", "Use Gate 14 for faster entry.", "Now"),
+                new ContextualMessageView("Late arrivals", "SMS", "Your shuttle departs in 12 minutes.", "T-12m"),
+                new ContextualMessageView("Drivers", "In-app", "Switch to adaptive route A due to traffic.", "Live")
+        );
+    }
+
+    public static List<AnalyticsView> advancedAnalytics() {
+        return List.of(
+                new AnalyticsView("ana_heatmap", "Heatmap density", "78", "%", "+9%"),
+                new AnalyticsView("ana_peak", "Demand peak accuracy", "91.3", "%", "+3.2%"),
+                new AnalyticsView("ana_route", "Adaptive route savings", "6.8", "min", "+1.4")
         );
     }
 

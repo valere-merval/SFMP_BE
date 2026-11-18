@@ -15,4 +15,9 @@ public class PredictionController {
     public ApiResponse<List<DemoCatalogue.ForecastView>> forecasts() {
         return ApiResponse.ok(DemoCatalogue.forecasts(), "Forecasts ready");
     }
+
+    @GetMapping("/demand")
+    public ApiResponse<List<DemoCatalogue.DemandPeakView>> demand() {
+        return ApiResponse.ok(DemoCatalogue.demandPeaks(), "Demand peaks ready");
+    }
 }

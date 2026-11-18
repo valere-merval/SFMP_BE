@@ -15,4 +15,9 @@ public class AnalyticsController {
     public ApiResponse<List<DemoCatalogue.AnalyticsView>> metrics() {
         return ApiResponse.ok(DemoCatalogue.analytics(), "Analytics ready");
     }
+
+    @GetMapping("/advanced")
+    public ApiResponse<List<DemoCatalogue.AnalyticsView>> advanced() {
+        return ApiResponse.ok(DemoCatalogue.advancedAnalytics(), "Advanced analytics ready");
+    }
 }
