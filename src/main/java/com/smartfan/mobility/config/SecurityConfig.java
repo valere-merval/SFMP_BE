@@ -2,6 +2,8 @@ package com.smartfan.mobility.config;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+import com.smartfan.mobility.auth.security.BearerTokenFilter;
+import com.smartfan.mobility.shared.auth.TokenService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,14 +18,17 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http, TokenService tokenService) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/error", "/actuator/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/**").permitAll()
+                        .requestMatchers("/", "/error", "/actuator/**", "/api/v1/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/**").authenticated()
+                        .requestMatchers("/api/v1/**").authenticated()
                         .anyRequest().permitAll())
+                .addFilterBefore(new BearerTokenFilter(tokenService), org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
