@@ -34,6 +34,24 @@ class ApiSmokeTest {
     }
 
     @Test
+    void roadmapAndIntelligenceEndpointsAreAvailable() throws IOException, InterruptedException {
+        String token = login("ops@sfmp.local", "ops123");
+        HttpResponse<String> roadmap = get("/api/v1/platform/roadmap", token);
+        HttpResponse<String> heatmaps = get("/api/v1/crowd/heatmaps", token);
+        HttpResponse<String> traffic = get("/api/v1/traffic/conditions", token);
+        HttpResponse<String> insights = get("/api/v1/intelligence/insights", token);
+
+        assertTrue(roadmap.statusCode() == 200);
+        assertTrue(roadmap.body().contains("Version 3"));
+        assertTrue(heatmaps.statusCode() == 200);
+        assertTrue(heatmaps.body().contains("Gate 12"));
+        assertTrue(traffic.statusCode() == 200);
+        assertTrue(traffic.body().contains("Airport Corridor"));
+        assertTrue(insights.statusCode() == 200);
+        assertTrue(insights.body().contains("PeakNet v2"));
+    }
+
+    @Test
     void loginReturnsAccessToken() throws IOException, InterruptedException {
         HttpResponse<String> response = post("/api/v1/auth/login", "{\"username\":\"admin@sfmp.local\",\"password\":\"admin123\"}", null);
         assertTrue(response.statusCode() == 200);
