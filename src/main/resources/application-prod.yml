@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/sfmp}
+    username: ${SPRING_DATASOURCE_USERNAME:sfmp}
+    password: ${SPRING_DATASOURCE_PASSWORD:sfmp}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
