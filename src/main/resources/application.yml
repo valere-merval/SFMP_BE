@@ -19,3 +19,7 @@ management:
     health:
       probes:
         enabled: true
+
+openai:
+  model: ${OPENAI_MODEL:gpt-5.3-mini}
+  base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
