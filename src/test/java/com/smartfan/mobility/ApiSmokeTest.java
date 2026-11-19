@@ -28,8 +28,9 @@ class ApiSmokeTest {
         assertTrue(unauthorized.statusCode() == 403 || unauthorized.statusCode() == 401);
 
         String token = login("fan@sfmp.local", "fan123");
-        HttpResponse<String> catalogCreate = post("/api/v1/event-catalogs", "{\"id\":\"cat_test\",\"title\":\"Champions League\",\"description\":\"Test catalog\",\"imageUrl\":\"https://example.com/catalog.jpg\",\"sport\":\"Football\",\"country\":\"Europe\",\"badge\":\"UCL\",\"eventCount\":1}", token);
-        HttpResponse<String> matchCreate = post("/api/v1/matches", "{\"id\":\"match_test\",\"catalogId\":\"cat_test\",\"homeTeam\":\"Real Madrid\",\"awayTeam\":\"Manchester City\",\"homeFlag\":\"ES\",\"awayFlag\":\"UK\",\"city\":\"Madrid\",\"country\":\"Spain\",\"venue\":\"Estadio Metropolitano\",\"stage\":\"Final\",\"date\":\"2027-05-29\",\"time\":\"21:00\",\"status\":\"Live\",\"gate\":\"Gate 34\",\"sector\":\"Sector 212\",\"countdown\":\"02:42:30\",\"weather\":\"Clear\",\"temperature\":\"22°C\",\"transitSummary\":\"Metro L7, shuttle S2\",\"ticketPrice\":\"€145\",\"imageUrl\":\"https://example.com/match.jpg\"}", token);
+        HttpResponse<String> catalogCreate = post("/api/v1/event-catalogs", "{\"title\":\"Champions League\",\"description\":\"Test catalog\",\"imageUrl\":\"https://example.com/catalog.jpg\",\"sport\":\"Football\",\"country\":\"Europe\",\"badge\":\"UCL\",\"eventCount\":1}", token);
+        String createdCatalogId = extractValue(catalogCreate.body(), "id");
+        HttpResponse<String> matchCreate = post("/api/v1/matches", "{\"id\":\"match_test\",\"catalogId\":\"" + createdCatalogId + "\",\"homeTeam\":\"Real Madrid\",\"awayTeam\":\"Manchester City\",\"homeFlag\":\"ES\",\"awayFlag\":\"UK\",\"city\":\"Madrid\",\"country\":\"Spain\",\"venue\":\"Estadio Metropolitano\",\"stage\":\"Final\",\"date\":\"2027-05-29\",\"time\":\"21:00\",\"status\":\"Live\",\"gate\":\"Gate 34\",\"sector\":\"Sector 212\",\"countdown\":\"02:42:30\",\"weather\":\"Clear\",\"temperature\":\"22°C\",\"transitSummary\":\"Metro L7, shuttle S2\",\"ticketPrice\":\"€145\",\"imageUrl\":\"https://example.com/match.jpg\"}", token);
         HttpResponse<String> events = get("/api/v1/events", token);
         HttpResponse<String> catalog = get("/api/v1/catalog", token);
         assertTrue(catalogCreate.statusCode() == 200 || catalogCreate.statusCode() == 201);
@@ -37,7 +38,8 @@ class ApiSmokeTest {
         assertTrue(events.statusCode() == 200);
         assertTrue(events.body().contains("Real Madrid"));
         assertTrue(catalog.statusCode() == 200);
-        assertTrue(catalog.body().contains("cat_test"));
+        assertTrue(catalog.body().contains("Champions League"));
+        assertTrue(catalog.body().contains(createdCatalogId));
     }
 
     @Test
@@ -88,5 +90,13 @@ class ApiSmokeTest {
             builder.header("Authorization", "Bearer " + bearerToken);
         }
         return client.send(builder.build(), HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+    }
+
+    private String extractValue(String body, String key) {
+        Matcher matcher = Pattern.compile("\\\"" + key + "\\\"\\s*:\\s*\\\"([^\\\"]+)\\\"").matcher(body);
+        if (!matcher.find()) {
+            throw new IllegalStateException("No " + key + " in response: " + body);
+        }
+        return matcher.group(1);
     }
 }

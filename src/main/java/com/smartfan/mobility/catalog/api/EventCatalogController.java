@@ -3,6 +3,8 @@ package com.smartfan.mobility.catalog.api;
 import com.smartfan.mobility.shared.api.ApiResponse;
 import com.smartfan.mobility.shared.catalogue.FixtureCatalogue;
 import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,7 +27,7 @@ public class EventCatalogController {
     @PostMapping
     public ApiResponse<FixtureCatalogue.EventCatalogView> create(@RequestBody EventCatalogCreateRequest request) {
         FixtureCatalogue.EventCatalogView created = new FixtureCatalogue.EventCatalogView(
-                request.id(),
+                generateCatalogId(request.title()),
                 request.title(),
                 request.description(),
                 request.imageUrl(),
@@ -40,5 +42,13 @@ public class EventCatalogController {
     @GetMapping("/{catalogId}/matches")
     public ApiResponse<List<FixtureCatalogue.MatchView>> matches(@PathVariable String catalogId) {
         return ApiResponse.ok(FixtureCatalogue.matchesForCatalog(catalogId), "Catalog matches ready");
+    }
+
+    private String generateCatalogId(String title) {
+        String slug = title == null ? "catalog" : title.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]+", "-").replaceAll("^-+|-+$", "");
+        if (slug.isBlank()) {
+            slug = "catalog";
+        }
+        return slug + "-" + UUID.randomUUID().toString().substring(0, 8);
     }
 }
