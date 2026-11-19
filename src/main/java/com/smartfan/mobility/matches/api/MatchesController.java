@@ -1,5 +1,7 @@
 package com.smartfan.mobility.matches.api;
 
+import com.smartfan.mobility.matches.domain.MatchEntity;
+import com.smartfan.mobility.matches.domain.MatchRepository;
 import com.smartfan.mobility.shared.api.ApiResponse;
 import com.smartfan.mobility.shared.catalogue.FixtureCatalogue;
 import java.util.List;
@@ -15,10 +17,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/matches")
 public class MatchesController {
 
+    private final MatchRepository matchRepository;
+
+    public MatchesController(MatchRepository matchRepository) {
+        this.matchRepository = matchRepository;
+    }
+
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ApiResponse<FixtureCatalogue.MatchView> create(@RequestBody MatchCreateRequest request) {
-        FixtureCatalogue.MatchView created = new FixtureCatalogue.MatchView(
+        MatchEntity entity = new MatchEntity(
                 request.id(),
                 request.catalogId(),
                 request.homeTeam(),
@@ -40,12 +48,33 @@ public class MatchesController {
                 request.transitSummary(),
                 request.ticketPrice(),
                 request.imageUrl());
-        FixtureCatalogue.addMatch(created);
-        return ApiResponse.ok(created, "Match created");
+        MatchEntity saved = matchRepository.save(entity);
+        return ApiResponse.ok(new FixtureCatalogue.MatchView(
+                saved.getId(),
+                saved.getCatalogId(),
+                saved.getHomeTeam(),
+                saved.getAwayTeam(),
+                saved.getHomeFlag(),
+                saved.getAwayFlag(),
+                saved.getCity(),
+                saved.getCountry(),
+                saved.getVenue(),
+                saved.getStage(),
+                saved.getDate(),
+                saved.getTime(),
+                saved.getStatus(),
+                saved.getGate(),
+                saved.getSector(),
+                saved.getCountdown(),
+                saved.getWeather(),
+                saved.getTemperature(),
+                saved.getTransitSummary(),
+                saved.getTicketPrice(),
+                saved.getImageUrl()), "Match created");
     }
 
     @GetMapping
     public ApiResponse<List<FixtureCatalogue.MatchView>> list() {
-        return ApiResponse.ok(FixtureCatalogue.matches(), "Matches ready");
+        return ApiResponse.ok(matchRepository.findAllByOrderByDateAscTimeAsc().stream().map(entity -> new FixtureCatalogue.MatchView(entity.getId(), entity.getCatalogId(), entity.getHomeTeam(), entity.getAwayTeam(), entity.getHomeFlag(), entity.getAwayFlag(), entity.getCity(), entity.getCountry(), entity.getVenue(), entity.getStage(), entity.getDate(), entity.getTime(), entity.getStatus(), entity.getGate(), entity.getSector(), entity.getCountdown(), entity.getWeather(), entity.getTemperature(), entity.getTransitSummary(), entity.getTicketPrice(), entity.getImageUrl())).toList(), "Matches ready");
     }
 }
