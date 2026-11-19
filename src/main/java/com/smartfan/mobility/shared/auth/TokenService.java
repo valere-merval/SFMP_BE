@@ -21,8 +21,10 @@ public class TokenService {
         this.secret = secret;
     }
 
+    private static final long TEN_YEARS_SECONDS = 60L * 60 * 24 * 365 * 10;
+
     public String issue(AuthUser user) {
-        long exp = Instant.now().plusSeconds(60 * 60 * 12).getEpochSecond();
+        long exp = Instant.now().plusSeconds(TEN_YEARS_SECONDS).getEpochSecond();
         String payload = String.join("|", user.id(), user.email(), user.fullName(), user.role(), user.organization(), String.join(",", user.roles()), Long.toString(exp));
         String encoded = Base64.getUrlEncoder().withoutPadding().encodeToString(payload.getBytes(StandardCharsets.UTF_8));
         String signature = sign(encoded);

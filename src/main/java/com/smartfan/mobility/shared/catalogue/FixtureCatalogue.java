@@ -24,6 +24,33 @@ public final class FixtureCatalogue {
     public record EventView(String id, String name, String city, String venue, LocalDate date, String status, int expectedAttendance) {
     }
 
+    public record EventCatalogView(String id, String title, String description, String imageUrl, String sport, String country, String badge, int eventCount) {
+    }
+
+    public record MatchView(
+            String id,
+            String catalogId,
+            String homeTeam,
+            String awayTeam,
+            String homeFlag,
+            String awayFlag,
+            String city,
+            String country,
+            String venue,
+            String stage,
+            LocalDate date,
+            String time,
+            String status,
+            String gate,
+            String sector,
+            String countdown,
+            String weather,
+            String temperature,
+            String transitSummary,
+            String ticketPrice,
+            String imageUrl) {
+    }
+
     public record VenueView(String id, String name, String city, String zoneCount, String accessPoints, String capacity) {
     }
 
@@ -92,6 +119,8 @@ public final class FixtureCatalogue {
 
     public record CatalogueSnapshot(
             List<EventView> events,
+            List<EventCatalogView> eventCatalogs,
+            List<MatchView> matches,
             List<VenueView> venues,
             List<MobilityOptionView> mobilityOptions,
             List<BookingView> bookings,
@@ -125,6 +154,21 @@ public final class FixtureCatalogue {
 
     public static List<EventView> events() {
         return SNAPSHOT.events();
+    }
+
+    public static List<EventCatalogView> eventCatalogs() {
+        return SNAPSHOT.eventCatalogs();
+    }
+
+    public static List<MatchView> matches() {
+        return SNAPSHOT.matches();
+    }
+
+    public static List<MatchView> matchesForCatalog(String catalogId) {
+        if (catalogId == null || catalogId.isBlank()) {
+            return matches();
+        }
+        return matches().stream().filter(match -> catalogId.equalsIgnoreCase(match.catalogId())).toList();
     }
 
     public static List<VenueView> venues() {
