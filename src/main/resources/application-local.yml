@@ -8,8 +8,13 @@ spring:
     hibernate:
       ddl-auto: none
     open-in-view: false
+    properties:
+      hibernate:
+        default_schema: sfmp
   flyway:
     enabled: true
+    default-schema: sfmp
+    schemas: sfmp
 
 logging:
   level:

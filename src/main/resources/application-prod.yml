@@ -8,8 +8,13 @@ spring:
     hibernate:
       ddl-auto: validate
     open-in-view: false
+    properties:
+      hibernate:
+        default_schema: sfmp
   flyway:
     enabled: true
+    default-schema: sfmp
+    schemas: sfmp
 
 s3:
   endpoint: ${S3_ENDPOINT:http://localhost:9000}

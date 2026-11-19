@@ -1,4 +1,6 @@
-create table if not exists event_catalogs (
+create schema if not exists sfmp;
+
+create table if not exists sfmp.event_catalogs (
     id varchar(120) primary key,
     title varchar(255) not null,
     description text not null,
@@ -11,9 +13,9 @@ create table if not exists event_catalogs (
     updated_at timestamp not null default current_timestamp
 );
 
-create table if not exists matches (
+create table if not exists sfmp.matches (
     id varchar(120) primary key,
-    catalog_id varchar(120) not null references event_catalogs(id) on delete cascade,
+    catalog_id varchar(120) not null references sfmp.event_catalogs(id) on delete cascade,
     home_team varchar(255) not null,
     away_team varchar(255) not null,
     home_flag text not null,
@@ -37,4 +39,4 @@ create table if not exists matches (
     updated_at timestamp not null default current_timestamp
 );
 
-create index if not exists idx_matches_catalog_id on matches(catalog_id);
+create index if not exists idx_matches_catalog_id on sfmp.matches(catalog_id);
