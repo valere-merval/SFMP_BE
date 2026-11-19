@@ -2,7 +2,7 @@ package com.smartfan.mobility.platform;
 
 import com.smartfan.mobility.shared.api.ApiResponse;
 import com.smartfan.mobility.shared.api.ModuleStatus;
-import com.smartfan.mobility.shared.demo.DemoCatalogue;
+import com.smartfan.mobility.shared.catalogue.FixtureCatalogue;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,7 +33,7 @@ public class PlatformController {
     }
 
     @GetMapping("/roadmap")
-    public ApiResponse<List<DemoCatalogue.RoadmapView>> roadmap() {
-        return ApiResponse.ok(DemoCatalogue.roadmap(), "Delivery roadmap");
+    public ApiResponse<List<FixtureCatalogue.RoadmapView>> roadmap() {
+        return ApiResponse.ok(FixtureCatalogue.roadmap(), "Delivery roadmap");
     }
 }

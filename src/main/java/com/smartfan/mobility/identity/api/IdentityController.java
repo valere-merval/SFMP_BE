@@ -1,7 +1,7 @@
 package com.smartfan.mobility.identity.api;
 
 import com.smartfan.mobility.shared.api.ApiResponse;
-import com.smartfan.mobility.shared.demo.DemoCatalogue;
+import com.smartfan.mobility.shared.catalogue.FixtureCatalogue;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class IdentityController {
 
     @GetMapping("/users")
-    public ApiResponse<List<DemoCatalogue.UserView>> users() {
-        return ApiResponse.ok(DemoCatalogue.users(), "Identity users loaded");
+    public ApiResponse<List<FixtureCatalogue.UserView>> users() {
+        return ApiResponse.ok(FixtureCatalogue.users(), "Identity users loaded");
     }
 }

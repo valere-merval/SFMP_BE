@@ -1,0 +1,595 @@
+{
+  "events": [
+    {
+      "id": "evt_madrid_final",
+      "name": "UEFA Champions League Final",
+      "city": "Madrid",
+      "venue": "Estadio Metropolitano",
+      "date": "2027-05-29",
+      "status": "Sales Open",
+      "expectedAttendance": 68200
+    },
+    {
+      "id": "evt_training_day",
+      "name": "Fan Mobility Dry Run",
+      "city": "Madrid",
+      "venue": "Estadio Metropolitano",
+      "date": "2027-05-27",
+      "status": "Planning",
+      "expectedAttendance": 1200
+    },
+    {
+      "id": "evt_city_experience",
+      "name": "Fan City Experience",
+      "city": "Madrid",
+      "venue": "Plaza de Oriente",
+      "date": "2027-05-28",
+      "status": "Published",
+      "expectedAttendance": 5400
+    }
+  ],
+  "venues": [
+    {
+      "id": "ven_metropolitano",
+      "name": "Estadio Metropolitano",
+      "city": "Madrid",
+      "zoneCount": "12 transport zones",
+      "accessPoints": "8 access points",
+      "capacity": "68,000"
+    },
+    {
+      "id": "ven_plaza_oriente",
+      "name": "Plaza de Oriente Fan Zone",
+      "city": "Madrid",
+      "zoneCount": "4 transport zones",
+      "accessPoints": "3 access points",
+      "capacity": "9,000"
+    }
+  ],
+  "mobilityOptions": [
+    {
+      "id": "mob_metro",
+      "mode": "Metro",
+      "duration": "18 min",
+      "price": "€2.10",
+      "status": "Recommended",
+      "highlight": "Fastest for peak flow"
+    },
+    {
+      "id": "mob_shuttle",
+      "mode": "Official Shuttle",
+      "duration": "25 min",
+      "price": "€8.00",
+      "status": "Live",
+      "highlight": "Best for group transfers"
+    },
+    {
+      "id": "mob_taxi",
+      "mode": "Taxi / Ride-hailing",
+      "duration": "22 min",
+      "price": "€24-35",
+      "status": "Available",
+      "highlight": "Door-to-door convenience"
+    },
+    {
+      "id": "mob_walk",
+      "mode": "Walking",
+      "duration": "34 min",
+      "price": "Free",
+      "status": "Available",
+      "highlight": "Good for nearby hotels"
+    }
+  ],
+  "bookings": [
+    {
+      "id": "bkg_1001",
+      "fanName": "Amina Diallo",
+      "eventName": "UEFA Champions League Final",
+      "option": "Official Shuttle",
+      "status": "Confirmed",
+      "departureTime": "18:10"
+    },
+    {
+      "id": "bkg_1002",
+      "fanName": "Jonas Weber",
+      "eventName": "UEFA Champions League Final",
+      "option": "Metro + Walk",
+      "status": "Pending",
+      "departureTime": "18:25"
+    },
+    {
+      "id": "bkg_1003",
+      "fanName": "Sara Ahmed",
+      "eventName": "Fan City Experience",
+      "option": "Taxi",
+      "status": "Cancelled",
+      "departureTime": "17:40"
+    }
+  ],
+  "drivers": [
+    {
+      "id": "drv_1",
+      "name": "Carlos Vega",
+      "vehicle": "Van #24",
+      "zone": "North Zone",
+      "status": "On Duty"
+    },
+    {
+      "id": "drv_2",
+      "name": "Lucia Martin",
+      "vehicle": "Shuttle #11",
+      "zone": "West Zone",
+      "status": "Standby"
+    },
+    {
+      "id": "drv_3",
+      "name": "David Ruiz",
+      "vehicle": "Coach #03",
+      "zone": "Airport Corridor",
+      "status": "On Route"
+    }
+  ],
+  "partners": [
+    {
+      "id": "prt_metro",
+      "name": "Metro de Madrid",
+      "service": "Rail capacity feed",
+      "coverage": "Madrid city",
+      "status": "Connected"
+    },
+    {
+      "id": "prt_shuttle",
+      "name": "City Shuttle Co.",
+      "service": "Fleet operations",
+      "coverage": "Stadium perimeter",
+      "status": "Connected"
+    },
+    {
+      "id": "prt_taxi",
+      "name": "RideFlow",
+      "service": "Ride-hailing integration",
+      "coverage": "Metro area",
+      "status": "Pilot"
+    }
+  ],
+  "crowdMetrics": [
+    {
+      "id": "crowd_total",
+      "label": "Expected arrivals",
+      "value": "68,200",
+      "trend": "+12%"
+    },
+    {
+      "id": "crowd_peak",
+      "label": "Peak window",
+      "value": "18:15-19:10",
+      "trend": "Stable"
+    },
+    {
+      "id": "crowd_heat",
+      "label": "Hot zones",
+      "value": "Gate 12, Gate 14",
+      "trend": "Rising"
+    }
+  ],
+  "forecasts": [
+    {
+      "id": "pred_1",
+      "label": "Metro load at 18:30",
+      "value": "91%",
+      "confidence": "High",
+      "action": "Open additional service trains"
+    },
+    {
+      "id": "pred_2",
+      "label": "Shuttle demand from airport",
+      "value": "1,820 riders",
+      "confidence": "Medium",
+      "action": "Increase shuttle frequency"
+    },
+    {
+      "id": "pred_3",
+      "label": "Post-match departure burst",
+      "value": "18 min spike",
+      "confidence": "High",
+      "action": "Pre-position vehicles at zones"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "ntf_1",
+      "title": "Gate change alert",
+      "channel": "Push",
+      "status": "Sent",
+      "sentAt": "2027-05-29T17:40:00"
+    },
+    {
+      "id": "ntf_2",
+      "title": "Route disruption update",
+      "channel": "SMS",
+      "status": "Queued",
+      "sentAt": "2027-05-29T18:05:00"
+    },
+    {
+      "id": "ntf_3",
+      "title": "Booking confirmed",
+      "channel": "App",
+      "status": "Sent",
+      "sentAt": "2027-05-29T16:55:00"
+    }
+  ],
+  "analytics": [
+    {
+      "id": "ana_sessions",
+      "label": "Daily sessions",
+      "value": "24,880",
+      "unit": "events",
+      "trend": "+8.4%"
+    },
+    {
+      "id": "ana_clicks",
+      "label": "Plan Journey CTR",
+      "value": "41.2",
+      "unit": "%",
+      "trend": "+2.1%"
+    },
+    {
+      "id": "ana_bookings",
+      "label": "Booking conversion",
+      "value": "7.8",
+      "unit": "%",
+      "trend": "+0.9%"
+    }
+  ],
+  "roadmap": [
+    {
+      "version": "Version 1",
+      "title": "MVP",
+      "features": [
+        "Gestion des événements",
+        "Découverte des événements",
+        "Planification des déplacements",
+        "Carte interactive",
+        "Réservation de transport démonstrative",
+        "Dashboard opérationnel",
+        "Collecte d'analytics",
+        "Première démonstration prédictive"
+      ]
+    },
+    {
+      "version": "Version 2",
+      "title": "Pilot Platform",
+      "features": [
+        "Intégration des partenaires de transport",
+        "Gestion des chauffeurs et véhicules",
+        "Tracking GPS avec consentement",
+        "Notifications intelligentes",
+        "Intégration des données de trafic",
+        "Prévisions de demande",
+        "Gestion avancée des zones"
+      ]
+    },
+    {
+      "version": "Version 3",
+      "title": "Intelligent Mobility",
+      "features": [
+        "Machine Learning pour les prévisions",
+        "Heatmaps de mobilité",
+        "Détection des pics de demande",
+        "Optimisation des points de ramassage",
+        "Adaptation des itinéraires",
+        "Communications contextuelles",
+        "Analytics avancées"
+      ]
+    }
+  ],
+  "heatmaps": [
+    {
+      "zone": "Gate 12",
+      "intensity": "Critical",
+      "trend": "Rising",
+      "recommendation": "Open additional corridor"
+    },
+    {
+      "zone": "Gate 14",
+      "intensity": "High",
+      "trend": "Stable",
+      "recommendation": "Keep extra staff deployed"
+    },
+    {
+      "zone": "Metro Plaza",
+      "intensity": "Medium",
+      "trend": "Falling",
+      "recommendation": "Maintain current routing"
+    }
+  ],
+  "demandPeaks": [
+    {
+      "window": "18:00-18:45",
+      "level": "High",
+      "action": "Pre-position shuttles"
+    },
+    {
+      "window": "20:55-21:40",
+      "level": "Critical",
+      "action": "Activate overflow lanes"
+    },
+    {
+      "window": "22:15-22:45",
+      "level": "Medium",
+      "action": "Open return-trip wave"
+    }
+  ],
+  "routeAdaptations": [
+    {
+      "corridor": "Airport Corridor",
+      "change": "Reroute via Ring Road",
+      "reason": "Traffic slowdown detected"
+    },
+    {
+      "corridor": "North Zone",
+      "change": "Shorten shuttle loop",
+      "reason": "Demand concentrated at gates"
+    },
+    {
+      "corridor": "Fan Village",
+      "change": "Add walking guidance",
+      "reason": "Pedestrian flow is under capacity"
+    }
+  ],
+  "contextualMessages": [
+    {
+      "audience": "Fans near Gate 12",
+      "channel": "Push",
+      "message": "Use Gate 14 for faster entry.",
+      "timing": "Now"
+    },
+    {
+      "audience": "Late arrivals",
+      "channel": "SMS",
+      "message": "Your shuttle departs in 12 minutes.",
+      "timing": "T-12m"
+    },
+    {
+      "audience": "Drivers",
+      "channel": "In-app",
+      "message": "Switch to adaptive route A due to traffic.",
+      "timing": "Live"
+    }
+  ],
+  "advancedAnalytics": [
+    {
+      "id": "ana_heatmap",
+      "label": "Heatmap density",
+      "value": "78",
+      "unit": "%",
+      "trend": "+9%"
+    },
+    {
+      "id": "ana_peak",
+      "label": "Demand peak accuracy",
+      "value": "91.3",
+      "unit": "%",
+      "trend": "+3.2%"
+    },
+    {
+      "id": "ana_route",
+      "label": "Adaptive route savings",
+      "value": "6.8",
+      "unit": "min",
+      "trend": "+1.4"
+    }
+  ],
+  "traffic": [
+    {
+      "corridor": "Airport Corridor",
+      "status": "Heavy",
+      "impact": "+18 min",
+      "recommendation": "Reroute via Ring Road"
+    },
+    {
+      "corridor": "North Ring",
+      "status": "Moderate",
+      "impact": "+7 min",
+      "recommendation": "Keep shuttle loop short"
+    },
+    {
+      "corridor": "Stadium Access",
+      "status": "Clear",
+      "impact": "0 min",
+      "recommendation": "Proceed as planned"
+    }
+  ],
+  "gpsConsents": [
+    {
+      "source": "Fan app",
+      "status": "Granted",
+      "lastUpdated": "2027-05-29 16:50"
+    },
+    {
+      "source": "Driver app",
+      "status": "Granted",
+      "lastUpdated": "2027-05-29 16:20"
+    },
+    {
+      "source": "Visitor web",
+      "status": "Pending",
+      "lastUpdated": "2027-05-29 16:05"
+    }
+  ],
+  "mlInsights": [
+    {
+      "model": "PeakNet v2",
+      "confidence": "93%",
+      "insight": "Demand will spike near Gate 14 at 20:55",
+      "action": "Pre-position shuttles"
+    },
+    {
+      "model": "RouteBrain v1",
+      "confidence": "89%",
+      "insight": "Airport corridor traffic will slow in 15 minutes",
+      "action": "Switch to adaptive route A"
+    },
+    {
+      "model": "CrowdFlow v3",
+      "confidence": "91%",
+      "insight": "Walking inflow will exceed average by 12%",
+      "action": "Open extra pedestrian lane"
+    }
+  ],
+  "auditEntries": [
+    {
+      "id": "aud_1",
+      "action": "UPDATED_BOOKING",
+      "actor": "ops-admin",
+      "resource": "booking:bkg_1001",
+      "at": "2027-05-29T16:45:00"
+    },
+    {
+      "id": "aud_2",
+      "action": "CREATED_EVENT",
+      "actor": "platform-admin",
+      "resource": "event:evt_madrid_final",
+      "at": "2027-02-12T10:00:00"
+    },
+    {
+      "id": "aud_3",
+      "action": "PUBLISHED_NOTIFICATION",
+      "actor": "system",
+      "resource": "notification:ntf_2",
+      "at": "2027-05-29T18:05:00"
+    }
+  ],
+  "mediaAssets": [
+    {
+      "id": "med_1",
+      "name": "Metropolitano hero image",
+      "type": "image/jpeg",
+      "status": "Ready",
+      "url": "s3://sfmp/events/metropolitano.jpg"
+    },
+    {
+      "id": "med_2",
+      "name": "Club logo bundle",
+      "type": "image/png",
+      "status": "Ready",
+      "url": "s3://sfmp/partners/logos.zip"
+    },
+    {
+      "id": "med_3",
+      "name": "Driver document",
+      "type": "application/pdf",
+      "status": "Processing",
+      "url": "s3://sfmp/docs/driver-24.pdf"
+    }
+  ],
+  "organizations": [
+    {
+      "id": "org_uefa",
+      "name": "UEFA",
+      "type": "Competition owner",
+      "status": "Active"
+    },
+    {
+      "id": "org_atleti",
+      "name": "Atlético de Madrid",
+      "type": "Club",
+      "status": "Active"
+    },
+    {
+      "id": "org_metro",
+      "name": "Metro de Madrid",
+      "type": "Transport operator",
+      "status": "Pilot"
+    }
+  ],
+  "users": [
+    {
+      "id": "usr_admin",
+      "fullName": "Valeria Gomez",
+      "role": "Platform Admin",
+      "organization": "SFMP",
+      "status": "Active"
+    },
+    {
+      "id": "usr_ops",
+      "fullName": "Hassan Karim",
+      "role": "Operations Lead",
+      "organization": "Metro de Madrid",
+      "status": "Active"
+    },
+    {
+      "id": "usr_fan",
+      "fullName": "Alicia Perez",
+      "role": "Fan",
+      "organization": "UEFA",
+      "status": "Invited"
+    }
+  ],
+  "integrations": [
+    {
+      "id": "int_kafka",
+      "name": "Kafka",
+      "status": "Connected",
+      "endpoint": "kafka://local-cluster"
+    },
+    {
+      "id": "int_minio",
+      "name": "MinIO",
+      "status": "Connected",
+      "endpoint": "http://minio:9000"
+    },
+    {
+      "id": "int_postgres",
+      "name": "PostgreSQL",
+      "status": "Connected",
+      "endpoint": "jdbc:postgresql://db:5432/sfmp"
+    }
+  ],
+  "operationsSummary": [
+    {
+      "id": "ops_live",
+      "label": "Live vehicles",
+      "value": "124",
+      "trend": "+6"
+    },
+    {
+      "id": "ops_bookings",
+      "label": "Bookings processed",
+      "value": "3,842",
+      "trend": "+11%"
+    },
+    {
+      "id": "ops_incidents",
+      "label": "Open incidents",
+      "value": "2",
+      "trend": "-1"
+    },
+    {
+      "id": "ops_eta",
+      "label": "Average ETA",
+      "value": "19 min",
+      "trend": "-3 min"
+    }
+  ],
+  "adminSummary": [
+    {
+      "id": "admin_orgs",
+      "label": "Organizations",
+      "value": "12",
+      "trend": "+2"
+    },
+    {
+      "id": "admin_users",
+      "label": "Users",
+      "value": "48",
+      "trend": "+5"
+    },
+    {
+      "id": "admin_roles",
+      "label": "Roles",
+      "value": "9",
+      "trend": "Stable"
+    }
+  ]
+}

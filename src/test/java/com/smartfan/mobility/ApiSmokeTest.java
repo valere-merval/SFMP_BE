@@ -40,6 +40,7 @@ class ApiSmokeTest {
         HttpResponse<String> heatmaps = get("/api/v1/crowd/heatmaps", token);
         HttpResponse<String> traffic = get("/api/v1/traffic/conditions", token);
         HttpResponse<String> insights = get("/api/v1/intelligence/insights", token);
+        HttpResponse<String> catalog = get("/api/v1/catalog", token);
 
         assertTrue(roadmap.statusCode() == 200);
         assertTrue(roadmap.body().contains("Version 3"));
@@ -49,6 +50,8 @@ class ApiSmokeTest {
         assertTrue(traffic.body().contains("Airport Corridor"));
         assertTrue(insights.statusCode() == 200);
         assertTrue(insights.body().contains("PeakNet v2"));
+        assertTrue(catalog.statusCode() == 200);
+        assertTrue(catalog.body().contains("UEFA Champions League Final"));
     }
 
     @Test

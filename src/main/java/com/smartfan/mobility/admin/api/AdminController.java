@@ -1,7 +1,7 @@
 package com.smartfan.mobility.admin.api;
 
 import com.smartfan.mobility.shared.api.ApiResponse;
-import com.smartfan.mobility.shared.demo.DemoCatalogue;
+import com.smartfan.mobility.shared.catalogue.FixtureCatalogue;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminController {
 
     @GetMapping("/organizations")
-    public ApiResponse<List<DemoCatalogue.OrganizationView>> organizations() {
-        return ApiResponse.ok(DemoCatalogue.organizations(), "Organizations ready");
+    public ApiResponse<List<FixtureCatalogue.OrganizationView>> organizations() {
+        return ApiResponse.ok(FixtureCatalogue.organizations(), "Organizations ready");
     }
 
     @GetMapping("/summary")
-    public ApiResponse<List<DemoCatalogue.MetricView>> summary() {
-        return ApiResponse.ok(DemoCatalogue.adminSummary(), "Admin summary ready");
+    public ApiResponse<List<FixtureCatalogue.MetricView>> summary() {
+        return ApiResponse.ok(FixtureCatalogue.adminSummary(), "Admin summary ready");
     }
 }
