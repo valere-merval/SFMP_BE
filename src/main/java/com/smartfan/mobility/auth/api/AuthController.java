@@ -3,6 +3,8 @@ package com.smartfan.mobility.auth.api;
 import com.smartfan.mobility.auth.application.AuthService;
 import com.smartfan.mobility.auth.domain.AuthUser;
 import com.smartfan.mobility.auth.domain.LoginRequest;
+import com.smartfan.mobility.auth.domain.RegisterRequest;
+import com.smartfan.mobility.auth.domain.ResetPasswordRequest;
 import com.smartfan.mobility.shared.api.ApiResponse;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -25,8 +27,20 @@ public class AuthController {
 
     @PostMapping("/login")
     public ApiResponse<AuthResponse> login(@RequestBody LoginRequest request) {
-        AuthResponse response = authService.login(request.username(), request.password());
+        AuthResponse response = authService.login(request.email(), request.password());
         return ApiResponse.ok(response, "Login successful");
+    }
+
+    @PostMapping("/register")
+    public ApiResponse<AuthResponse> register(@RequestBody RegisterRequest request) {
+        AuthResponse response = authService.register(request);
+        return ApiResponse.ok(response, "Account created");
+    }
+
+    @PostMapping("/reset-password")
+    public ApiResponse<AuthResponse> resetPassword(@RequestBody ResetPasswordRequest request) {
+        AuthResponse response = authService.resetPassword(request);
+        return ApiResponse.ok(response, "Password updated");
     }
 
     @GetMapping("/me")

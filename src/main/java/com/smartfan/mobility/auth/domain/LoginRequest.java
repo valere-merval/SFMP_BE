@@ -1,4 +1,6 @@
 package com.smartfan.mobility.auth.domain;
 
-public record LoginRequest(String username, String password) {
+import com.fasterxml.jackson.annotation.JsonAlias;
+
+public record LoginRequest(@JsonAlias({"username"}) String email, String password) {
 }

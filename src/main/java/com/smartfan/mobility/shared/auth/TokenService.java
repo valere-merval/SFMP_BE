@@ -23,7 +23,7 @@ public class TokenService {
 
     public String issue(AuthUser user) {
         long exp = Instant.now().plusSeconds(60 * 60 * 12).getEpochSecond();
-        String payload = String.join("|", user.id(), user.fullName(), user.role(), user.organization(), String.join(",", user.roles()), Long.toString(exp));
+        String payload = String.join("|", user.id(), user.email(), user.fullName(), user.role(), user.organization(), String.join(",", user.roles()), Long.toString(exp));
         String encoded = Base64.getUrlEncoder().withoutPadding().encodeToString(payload.getBytes(StandardCharsets.UTF_8));
         String signature = sign(encoded);
         return encoded + "." + signature;
@@ -36,11 +36,11 @@ public class TokenService {
             if (!sign(parts[0]).equals(parts[1])) return Optional.empty();
             String payload = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
             String[] values = payload.split("\\|", -1);
-            if (values.length != 6) return Optional.empty();
-            long exp = Long.parseLong(values[5]);
+            if (values.length != 7) return Optional.empty();
+            long exp = Long.parseLong(values[6]);
             if (Instant.now().getEpochSecond() > exp) return Optional.empty();
-            List<String> roles = values[4].isBlank() ? List.of() : List.of(values[4].split(","));
-            return Optional.of(new AuthUser(values[0], values[1], values[2], values[3], roles));
+            List<String> roles = values[5].isBlank() ? List.of() : List.of(values[5].split(","));
+            return Optional.of(new AuthUser(values[0], values[1], values[2], values[3], values[4], roles));
         } catch (Exception ex) {
             return Optional.empty();
         }
