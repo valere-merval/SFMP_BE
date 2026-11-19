@@ -1,22 +1,15 @@
 package com.smartfan.mobility.shared.catalogue;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.ResourceLoader;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class FixtureCatalogue {
 
-    private static final String DEFAULT_LOCATION = "classpath:data/champions-league-final-madrid.json";
-    private static final ObjectMapper MAPPER = JsonMapper.builder().addModule(new JavaTimeModule()).build();
-    private static final ResourceLoader RESOURCE_LOADER = new DefaultResourceLoader();
     private static final CatalogueSnapshot SNAPSHOT = loadSnapshot();
+    private static final CopyOnWriteArrayList<EventCatalogView> EVENT_CATALOGS = new CopyOnWriteArrayList<>();
+    private static final CopyOnWriteArrayList<MatchView> MATCHES = new CopyOnWriteArrayList<>();
 
     private FixtureCatalogue() {
     }
@@ -149,19 +142,57 @@ public final class FixtureCatalogue {
     }
 
     public static CatalogueSnapshot snapshot() {
-        return SNAPSHOT;
+        return new CatalogueSnapshot(
+                events(),
+                eventCatalogs(),
+                matches(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of());
     }
 
     public static List<EventView> events() {
-        return SNAPSHOT.events();
+        return MATCHES.stream()
+                .map(match -> new EventView(match.id(), match.homeTeam() + " vs " + match.awayTeam(), match.city(), match.venue(), match.date(), match.status(), 0))
+                .toList();
     }
 
     public static List<EventCatalogView> eventCatalogs() {
-        return SNAPSHOT.eventCatalogs();
+        return List.copyOf(EVENT_CATALOGS);
+    }
+
+    public static void addEventCatalog(EventCatalogView catalog) {
+        EVENT_CATALOGS.add(catalog);
     }
 
     public static List<MatchView> matches() {
-        return SNAPSHOT.matches();
+        return List.copyOf(MATCHES);
+    }
+
+    public static void addMatch(MatchView match) {
+        MATCHES.add(match);
     }
 
     public static List<MatchView> matchesForCatalog(String catalogId) {
@@ -272,11 +303,35 @@ public final class FixtureCatalogue {
     }
 
     private static CatalogueSnapshot loadSnapshot() {
-        String location = System.getProperty("sfmp.catalogue.location", System.getenv().getOrDefault("SFMP_CATALOGUE_LOCATION", DEFAULT_LOCATION));
-        try (InputStream inputStream = RESOURCE_LOADER.getResource(location).getInputStream()) {
-            return MAPPER.readValue(inputStream, CatalogueSnapshot.class);
-        } catch (IOException ex) {
-            throw new IllegalStateException("Unable to load SFMP catalogue from " + location, ex);
-        }
+        return new CatalogueSnapshot(
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of());
     }
+
 }

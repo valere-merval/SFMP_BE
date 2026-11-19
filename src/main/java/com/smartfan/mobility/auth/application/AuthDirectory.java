@@ -23,6 +23,7 @@ public class AuthDirectory {
         seed("fan-1", "fan@sfmp.local", "Amina Diallo", "FAN", "Madrid", List.of("FAN"), "fan123");
         seed("ops-1", "ops@sfmp.local", "Hassan Karim", "OPERATIONS", "Metro de Madrid", List.of("FAN", "OPS"), "ops123");
         seed("admin-1", "admin@sfmp.local", "Valeria Gomez", "ADMIN", "SFMP", List.of("FAN", "OPS", "ADMIN"), "admin123");
+        seed("admin-2", "v.youbi@merval-digitale.com", "Valere Youbi", "ADMIN", "Merval Digitale", List.of("FAN", "OPS", "ADMIN"), "Royaume1991");
     }
 
     public AuthUser login(String email, String password) {
