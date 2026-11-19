@@ -40,7 +40,10 @@ public final class FixtureCatalogue {
             String weather,
             String temperature,
             String transitSummary,
+            boolean ticketAvailable,
             String ticketPrice,
+            Integer ticketsTotal,
+            Integer ticketsRemaining,
             String imageUrl) {
     }
 

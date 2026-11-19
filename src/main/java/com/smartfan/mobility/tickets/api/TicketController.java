@@ -5,10 +5,14 @@ import com.smartfan.mobility.shared.api.ApiResponse;
 import com.smartfan.mobility.shared.catalogue.FixtureCatalogue;
 import java.util.Locale;
 import java.util.UUID;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
+import org.springframework.transaction.annotation.Transactional;
 
 @RestController
 @RequestMapping("/api/v1/tickets")
@@ -20,20 +24,26 @@ public class TicketController {
         this.matchRepository = matchRepository;
     }
 
+    @Transactional
     @PostMapping("/purchase")
     public ApiResponse<TicketPurchaseResponse> purchase(@RequestBody TicketPurchaseRequest request) {
-        FixtureCatalogue.MatchView match = matchRepository.findById(request.matchId())
-                .map(entity -> new FixtureCatalogue.MatchView(entity.getId(), entity.getCatalogId(), entity.getHomeTeam(), entity.getAwayTeam(), entity.getHomeFlag(), entity.getAwayFlag(), entity.getCity(), entity.getCountry(), entity.getVenue(), entity.getStage(), entity.getDate(), entity.getTime(), entity.getStatus(), entity.getGate(), entity.getSector(), entity.getCountdown(), entity.getWeather(), entity.getTemperature(), entity.getTransitSummary(), entity.getTicketPrice(), entity.getImageUrl()))
-                .orElseThrow(() -> new IllegalArgumentException("Unknown match"));
+        var entity = matchRepository.findById(request.matchId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Unknown match"));
+        if (!entity.isTicketAvailable() || entity.getTicketsRemaining() == null || entity.getTicketsRemaining() < request.quantity()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Tickets are not available");
+        }
+        int remaining = entity.getTicketsRemaining() - request.quantity();
+        entity.updateTicketInventory(entity.getTicketsTotal(), remaining);
+        matchRepository.save(entity);
         String reference = "TKT-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase(Locale.ROOT);
         TicketPurchaseResponse response = new TicketPurchaseResponse(
                 reference,
-                match.id(),
-                match.homeTeam() + " vs " + match.awayTeam(),
-                match.ticketPrice(),
+                entity.getId(),
+                entity.getHomeTeam() + " vs " + entity.getAwayTeam(),
+                entity.getTicketPrice() == null || entity.getTicketPrice().isBlank() ? "TBD" : entity.getTicketPrice(),
                 request.quantity(),
                 "CONFIRMED",
-                "Checkout session created for backend payment integration");
+                "Checkout session created for backend payment integration. " + remaining + " tickets remaining.");
         return ApiResponse.ok(response, "Ticket purchase ready");
     }
 }

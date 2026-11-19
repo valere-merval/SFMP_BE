@@ -2,6 +2,7 @@ package com.smartfan.mobility.catalog.application;
 
 import com.smartfan.mobility.catalog.domain.EventCatalogEntity;
 import com.smartfan.mobility.catalog.domain.EventCatalogRepository;
+import com.smartfan.mobility.shared.weather.MatchWeatherService;
 import com.smartfan.mobility.matches.domain.MatchEntity;
 import com.smartfan.mobility.matches.domain.MatchRepository;
 import com.smartfan.mobility.shared.catalogue.FixtureCatalogue;
@@ -16,10 +17,12 @@ public class CatalogPersistenceService {
 
     private final EventCatalogRepository eventCatalogRepository;
     private final MatchRepository matchRepository;
+    private final MatchWeatherService matchWeatherService;
 
-    public CatalogPersistenceService(EventCatalogRepository eventCatalogRepository, MatchRepository matchRepository) {
+    public CatalogPersistenceService(EventCatalogRepository eventCatalogRepository, MatchRepository matchRepository, MatchWeatherService matchWeatherService) {
         this.eventCatalogRepository = eventCatalogRepository;
         this.matchRepository = matchRepository;
+        this.matchWeatherService = matchWeatherService;
     }
 
     @Transactional(readOnly = true)
@@ -30,9 +33,10 @@ public class CatalogPersistenceService {
     }
 
     @Transactional
-    public FixtureCatalogue.EventCatalogView createCatalog(String title, String description, String imageUrl, String sport, String country, String badge, int eventCount) {
+    public FixtureCatalogue.EventCatalogView createCatalog(String title, String description, String imageUrl, List<String> sports, String country, String badge) {
         String id = generateCatalogId(title);
-        EventCatalogEntity entity = new EventCatalogEntity(id, title, description, imageUrl, sport, country, badge, eventCount);
+        String sport = sports == null || sports.isEmpty() ? "Football" : String.join(", ", sports);
+        EventCatalogEntity entity = new EventCatalogEntity(id, title, description, imageUrl, sport, country, badge, 0);
         eventCatalogRepository.save(entity);
         return toView(entity);
     }
@@ -59,6 +63,9 @@ public class CatalogPersistenceService {
 
     @Transactional
     public FixtureCatalogue.MatchView createMatch(FixtureCatalogue.MatchView match) {
+        MatchWeatherService.MatchWeatherSnapshot weather = matchWeatherService.enrich(match.city(), match.country(), match.venue(), match.date(), match.time());
+        String weatherValue = match.weather() == null || match.weather().isBlank() ? weather.weather() : match.weather();
+        String temperatureValue = match.temperature() == null || match.temperature().isBlank() ? weather.temperature() : match.temperature();
         MatchEntity entity = new MatchEntity(
                 match.id(),
                 match.catalogId(),
@@ -76,10 +83,13 @@ public class CatalogPersistenceService {
                 match.gate(),
                 match.sector(),
                 match.countdown(),
-                match.weather(),
-                match.temperature(),
+                weatherValue,
+                temperatureValue,
                 match.transitSummary(),
+                match.ticketAvailable(),
                 match.ticketPrice(),
+                match.ticketsTotal(),
+                match.ticketsRemaining(),
                 match.imageUrl());
         matchRepository.save(entity);
         return toView(entity);
@@ -124,7 +134,7 @@ public class CatalogPersistenceService {
     }
 
     private FixtureCatalogue.MatchView toView(MatchEntity entity) {
-        return new FixtureCatalogue.MatchView(entity.getId(), entity.getCatalogId(), entity.getHomeTeam(), entity.getAwayTeam(), entity.getHomeFlag(), entity.getAwayFlag(), entity.getCity(), entity.getCountry(), entity.getVenue(), entity.getStage(), entity.getDate(), entity.getTime(), entity.getStatus(), entity.getGate(), entity.getSector(), entity.getCountdown(), entity.getWeather(), entity.getTemperature(), entity.getTransitSummary(), entity.getTicketPrice(), entity.getImageUrl());
+        return new FixtureCatalogue.MatchView(entity.getId(), entity.getCatalogId(), entity.getHomeTeam(), entity.getAwayTeam(), entity.getHomeFlag(), entity.getAwayFlag(), entity.getCity(), entity.getCountry(), entity.getVenue(), entity.getStage(), entity.getDate(), entity.getTime(), entity.getStatus(), entity.getGate(), entity.getSector(), entity.getCountdown(), entity.getWeather(), entity.getTemperature(), entity.getTransitSummary(), entity.isTicketAvailable(), entity.getTicketPrice(), entity.getTicketsTotal(), entity.getTicketsRemaining(), entity.getImageUrl());
     }
 
     private String generateCatalogId(String title) {

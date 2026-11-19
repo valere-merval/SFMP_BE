@@ -1,4 +1,6 @@
 package com.smartfan.mobility.catalog.api;
 
-public record EventCatalogCreateRequest(String title, String description, String imageUrl, String sport, String country, String badge, int eventCount) {
+import java.util.List;
+
+public record EventCatalogCreateRequest(String title, String description, String imageUrl, List<String> sports, String country, String badge) {
 }

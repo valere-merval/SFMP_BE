@@ -73,8 +73,17 @@ public class MatchEntity {
     @Column(name = "transit_summary", nullable = false, columnDefinition = "text")
     private String transitSummary;
 
-    @Column(name = "ticket_price", nullable = false)
+    @Column(name = "ticket_available", nullable = false)
+    private boolean ticketAvailable;
+
+    @Column(name = "ticket_price")
     private String ticketPrice;
+
+    @Column(name = "tickets_total")
+    private Integer ticketsTotal;
+
+    @Column(name = "tickets_remaining")
+    private Integer ticketsRemaining;
 
     @Column(name = "image_url", nullable = false, columnDefinition = "text")
     private String imageUrl;
@@ -89,7 +98,7 @@ public class MatchEntity {
 
     protected MatchEntity() {}
 
-    public MatchEntity(String id, String catalogId, String homeTeam, String awayTeam, String homeFlag, String awayFlag, String city, String country, String venue, String stage, LocalDate date, String time, String status, String gate, String sector, String countdown, String weather, String temperature, String transitSummary, String ticketPrice, String imageUrl) {
+    public MatchEntity(String id, String catalogId, String homeTeam, String awayTeam, String homeFlag, String awayFlag, String city, String country, String venue, String stage, LocalDate date, String time, String status, String gate, String sector, String countdown, String weather, String temperature, String transitSummary, boolean ticketAvailable, String ticketPrice, Integer ticketsTotal, Integer ticketsRemaining, String imageUrl) {
         this.id = id;
         this.catalogId = catalogId;
         this.homeTeam = homeTeam;
@@ -109,7 +118,10 @@ public class MatchEntity {
         this.weather = weather;
         this.temperature = temperature;
         this.transitSummary = transitSummary;
+        this.ticketAvailable = ticketAvailable;
         this.ticketPrice = ticketPrice;
+        this.ticketsTotal = ticketsTotal;
+        this.ticketsRemaining = ticketsRemaining;
         this.imageUrl = imageUrl;
     }
 
@@ -132,6 +144,15 @@ public class MatchEntity {
     public String getWeather() { return weather; }
     public String getTemperature() { return temperature; }
     public String getTransitSummary() { return transitSummary; }
+    public boolean isTicketAvailable() { return ticketAvailable; }
     public String getTicketPrice() { return ticketPrice; }
+    public Integer getTicketsTotal() { return ticketsTotal; }
+    public Integer getTicketsRemaining() { return ticketsRemaining; }
     public String getImageUrl() { return imageUrl; }
+
+    public void updateTicketInventory(Integer ticketsTotal, Integer ticketsRemaining) {
+        this.ticketsTotal = ticketsTotal;
+        this.ticketsRemaining = ticketsRemaining;
+        this.ticketAvailable = ticketsRemaining != null && ticketsRemaining > 0;
+    }
 }

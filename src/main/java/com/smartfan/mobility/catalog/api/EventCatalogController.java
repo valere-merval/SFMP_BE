@@ -35,10 +35,9 @@ public class EventCatalogController {
                 request.title(),
                 request.description(),
                 request.imageUrl(),
-                request.sport(),
+                request.sports(),
                 request.country(),
-                request.badge(),
-                request.eventCount());
+                request.badge());
         return ApiResponse.ok(created, "Event catalog created");
     }
 
