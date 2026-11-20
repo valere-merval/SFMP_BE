@@ -134,10 +134,11 @@ public class TransportProfileService {
                         "",
                         now,
                         now));
+        boolean available = request.available() == null || request.available();
         entity.update(
-                request.available() == null || request.available(),
-                request.ready() != null && request.ready(),
-                safe(request.status(), entity.getStatus()),
+                available,
+                available,
+                available ? "Available" : "Not available",
                 safe(request.notes(), entity.getNotes()),
                 now);
         availabilityRepository.save(entity);
@@ -151,7 +152,7 @@ public class TransportProfileService {
                 .orElseThrow(() -> new IllegalStateException("Create your transport profile first"));
         return availabilityRepository.findByProfileIdAndMatchId(profile.getId(), safe(matchId))
                 .map(this::toAvailabilityView)
-                .orElseGet(() -> new TransportAvailabilityView("", profile.getId(), safe(matchId), matchTitle(matchId), false, false, "Offline", "", null, null));
+                .orElseGet(() -> new TransportAvailabilityView("", profile.getId(), safe(matchId), matchTitle(matchId), false, false, "Not available", "", null, null));
     }
 
     private TransportProfileView toView(TransportProfileEntity entity) {
@@ -181,7 +182,7 @@ public class TransportProfileService {
     private FixtureCatalogue.TransportProviderView toPublicView(TransportProfileEntity profile, TransportProfileAvailabilityEntity availability) {
         boolean available = availability != null && availability.isAvailable();
         boolean ready = availability != null && availability.isReady();
-        String status = availability == null ? (profile.isActive() ? "Active" : "Paused") : availability.getStatus();
+        String status = availability == null ? "Not available" : (available ? "Available" : "Not available");
         return new FixtureCatalogue.TransportProviderView(
                 profile.getId(),
                 availability == null ? "" : availability.getMatchId(),
