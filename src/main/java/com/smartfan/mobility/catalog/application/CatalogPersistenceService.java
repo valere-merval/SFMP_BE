@@ -6,7 +6,7 @@ import com.smartfan.mobility.matches.domain.MatchEntity;
 import com.smartfan.mobility.matches.domain.MatchRepository;
 import com.smartfan.mobility.shared.catalogue.FixtureCatalogue;
 import com.smartfan.mobility.shared.weather.MatchWeatherService;
-import com.smartfan.mobility.transport.application.TransportProviderService;
+import com.smartfan.mobility.transport.application.TransportProfileService;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -19,13 +19,13 @@ public class CatalogPersistenceService {
     private final EventCatalogRepository eventCatalogRepository;
     private final MatchRepository matchRepository;
     private final MatchWeatherService matchWeatherService;
-    private final TransportProviderService transportProviderService;
+    private final TransportProfileService transportProfileService;
 
-    public CatalogPersistenceService(EventCatalogRepository eventCatalogRepository, MatchRepository matchRepository, MatchWeatherService matchWeatherService, TransportProviderService transportProviderService) {
+    public CatalogPersistenceService(EventCatalogRepository eventCatalogRepository, MatchRepository matchRepository, MatchWeatherService matchWeatherService, TransportProfileService transportProfileService) {
         this.eventCatalogRepository = eventCatalogRepository;
         this.matchRepository = matchRepository;
         this.matchWeatherService = matchWeatherService;
-        this.transportProviderService = transportProviderService;
+        this.transportProfileService = transportProfileService;
     }
 
     @Transactional(readOnly = true)
@@ -130,7 +130,7 @@ public class CatalogPersistenceService {
                 snapshot.integrations(),
                 snapshot.operationsSummary(),
                 snapshot.adminSummary(),
-                transportProviderService.listPublic(null));
+                transportProfileService.listPublic(null));
     }
 
     private FixtureCatalogue.EventCatalogView toView(EventCatalogEntity entity) {

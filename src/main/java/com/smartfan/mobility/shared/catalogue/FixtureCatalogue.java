@@ -113,7 +113,7 @@ public final class FixtureCatalogue {
     public record IntegrationView(String id, String name, String status, String endpoint) {
     }
 
-    public record TransportProviderView(String id, String matchId, String matchTitle, String providerType, String displayName, String vehicleLabel, String zone, String status, boolean active, String city, String country) {
+    public record TransportProviderView(String id, String matchId, String matchTitle, String providerType, String displayName, String vehicleLabel, String zone, String status, boolean active, String city, String country, String ownerName, String driverName, String vehiclePlate, boolean ready, String publicNotes) {
     }
 
     public record CatalogueSnapshot(

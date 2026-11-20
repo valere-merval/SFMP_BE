@@ -83,7 +83,12 @@ public class TransportProviderService {
                 entity.getStatus(),
                 entity.isActive(),
                 entity.getCity(),
-                entity.getCountry());
+                entity.getCountry(),
+                "",
+                entity.getDriverName(),
+                entity.getVehiclePlate(),
+                entity.isActive(),
+                entity.getPublicNotes());
     }
 
     private TransportProviderAdminView toAdminView(TransportProviderEntity entity) {
