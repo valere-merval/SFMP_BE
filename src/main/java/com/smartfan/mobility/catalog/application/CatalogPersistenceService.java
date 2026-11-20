@@ -2,10 +2,11 @@ package com.smartfan.mobility.catalog.application;
 
 import com.smartfan.mobility.catalog.domain.EventCatalogEntity;
 import com.smartfan.mobility.catalog.domain.EventCatalogRepository;
-import com.smartfan.mobility.shared.weather.MatchWeatherService;
 import com.smartfan.mobility.matches.domain.MatchEntity;
 import com.smartfan.mobility.matches.domain.MatchRepository;
 import com.smartfan.mobility.shared.catalogue.FixtureCatalogue;
+import com.smartfan.mobility.shared.weather.MatchWeatherService;
+import com.smartfan.mobility.transport.application.TransportProviderService;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -18,11 +19,13 @@ public class CatalogPersistenceService {
     private final EventCatalogRepository eventCatalogRepository;
     private final MatchRepository matchRepository;
     private final MatchWeatherService matchWeatherService;
+    private final TransportProviderService transportProviderService;
 
-    public CatalogPersistenceService(EventCatalogRepository eventCatalogRepository, MatchRepository matchRepository, MatchWeatherService matchWeatherService) {
+    public CatalogPersistenceService(EventCatalogRepository eventCatalogRepository, MatchRepository matchRepository, MatchWeatherService matchWeatherService, TransportProviderService transportProviderService) {
         this.eventCatalogRepository = eventCatalogRepository;
         this.matchRepository = matchRepository;
         this.matchWeatherService = matchWeatherService;
+        this.transportProviderService = transportProviderService;
     }
 
     @Transactional(readOnly = true)
@@ -126,7 +129,8 @@ public class CatalogPersistenceService {
                 snapshot.users(),
                 snapshot.integrations(),
                 snapshot.operationsSummary(),
-                snapshot.adminSummary());
+                snapshot.adminSummary(),
+                transportProviderService.listPublic(null));
     }
 
     private FixtureCatalogue.EventCatalogView toView(EventCatalogEntity entity) {

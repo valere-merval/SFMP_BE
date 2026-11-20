@@ -113,6 +113,9 @@ public final class FixtureCatalogue {
     public record IntegrationView(String id, String name, String status, String endpoint) {
     }
 
+    public record TransportProviderView(String id, String matchId, String matchTitle, String providerType, String displayName, String vehicleLabel, String zone, String status, boolean active, String city, String country) {
+    }
+
     public record CatalogueSnapshot(
             List<EventView> events,
             List<EventCatalogView> eventCatalogs,
@@ -141,7 +144,8 @@ public final class FixtureCatalogue {
             List<UserView> users,
             List<IntegrationView> integrations,
             List<MetricView> operationsSummary,
-            List<MetricView> adminSummary) {
+            List<MetricView> adminSummary,
+            List<TransportProviderView> transportProviders) {
     }
 
     public static CatalogueSnapshot snapshot() {
@@ -149,6 +153,7 @@ public final class FixtureCatalogue {
                 events(),
                 eventCatalogs(),
                 matches(),
+                List.of(),
                 List.of(),
                 List.of(),
                 List.of(),
@@ -305,8 +310,13 @@ public final class FixtureCatalogue {
         return SNAPSHOT.adminSummary();
     }
 
+    public static List<TransportProviderView> transportProviders() {
+        return SNAPSHOT.transportProviders();
+    }
+
     private static CatalogueSnapshot loadSnapshot() {
         return new CatalogueSnapshot(
+                List.of(),
                 List.of(),
                 List.of(),
                 List.of(),
