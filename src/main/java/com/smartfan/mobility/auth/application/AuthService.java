@@ -5,6 +5,7 @@ import com.smartfan.mobility.auth.domain.AuthUser;
 import com.smartfan.mobility.auth.domain.LoginRequest;
 import com.smartfan.mobility.auth.domain.RegisterRequest;
 import com.smartfan.mobility.auth.domain.ResetPasswordRequest;
+import com.smartfan.mobility.auth.application.UserProfileService;
 import com.smartfan.mobility.shared.auth.TokenService;
 import java.util.List;
 import org.springframework.security.access.AccessDeniedException;
@@ -15,10 +16,12 @@ public class AuthService {
 
     private final AuthDirectory authDirectory;
     private final TokenService tokenService;
+    private final UserProfileService userProfileService;
 
-    public AuthService(AuthDirectory authDirectory, TokenService tokenService) {
+    public AuthService(AuthDirectory authDirectory, TokenService tokenService, UserProfileService userProfileService) {
         this.authDirectory = authDirectory;
         this.tokenService = tokenService;
+        this.userProfileService = userProfileService;
     }
 
     public AuthResponse login(String email, String password) {
@@ -26,7 +29,9 @@ public class AuthService {
     }
 
     public AuthResponse register(RegisterRequest request) {
-        return issue(authDirectory.register(request));
+        AuthUser user = authDirectory.register(request);
+        userProfileService.saveProfile(user.email(), request);
+        return issue(user);
     }
 
     public AuthResponse resetPassword(ResetPasswordRequest request) {

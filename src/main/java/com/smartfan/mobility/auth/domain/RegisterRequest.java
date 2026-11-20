@@ -11,5 +11,7 @@ public record RegisterRequest(
         String city,
         String phone,
         String preferredLanguage,
+        String phonePrefix,
+        String photoUrl,
         String accountType) {
 }

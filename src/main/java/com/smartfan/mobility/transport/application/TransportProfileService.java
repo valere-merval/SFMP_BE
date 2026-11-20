@@ -105,7 +105,12 @@ public class TransportProfileService {
         if (matchId == null || matchId.isBlank()) {
             return profileRepository.findAllByOrderByUpdatedAtDesc().stream()
                     .filter(TransportProfileEntity::isActive)
-                    .map(profile -> toPublicView(profile, null))
+                    .map(profile -> availabilityRepository.findByProfileIdOrderByUpdatedAtDesc(profile.getId()).stream()
+                            .findFirst()
+                            .filter(TransportProfileAvailabilityEntity::isAvailable)
+                            .map(availability -> toPublicView(profile, availability))
+                            .orElse(null))
+                    .filter(profile -> profile != null)
                     .toList();
         }
         return availabilityRepository.findByMatchIdAndAvailableTrueOrderByUpdatedAtDesc(matchId).stream()
