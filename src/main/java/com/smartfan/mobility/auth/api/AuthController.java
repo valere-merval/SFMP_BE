@@ -45,7 +45,7 @@ public class AuthController {
 
     @GetMapping("/me")
     public ApiResponse<AuthUser> me() {
-        return ApiResponse.ok(authService.currentUser(), "Current user");
+        return ApiResponse.ok(authService.currentUserOptional().orElse(null), "Current user");
     }
 
     @GetMapping("/roles")

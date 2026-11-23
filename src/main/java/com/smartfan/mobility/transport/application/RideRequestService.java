@@ -6,6 +6,7 @@ import com.smartfan.mobility.transport.api.RideRequestView;
 import com.smartfan.mobility.transport.domain.RideRequestEntity;
 import com.smartfan.mobility.transport.domain.RideRequestRepository;
 import com.smartfan.mobility.transport.domain.RideRequestStatus;
+import com.smartfan.mobility.shared.auth.TokenService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,18 +20,22 @@ import java.util.UUID;
 @Transactional
 public class RideRequestService {
     private final RideRequestRepository repository;
+    private final TokenService tokenService;
 
-    public RideRequestService(RideRequestRepository repository) {
+    public RideRequestService(RideRequestRepository repository, TokenService tokenService) {
         this.repository = repository;
+        this.tokenService = tokenService;
     }
 
     public RideRequestView create(RideRequestCreateRequest request) {
+        String passengerEmail = resolvePassengerEmail(request.getPassengerEmail());
+        String passengerName = defaultText(request.getPassengerName(), passengerEmail);
         RideRequestEntity entity = new RideRequestEntity(
             UUID.randomUUID(),
             require(request.getMatchId(), "matchId"),
             require(request.getMatchTitle(), "matchTitle"),
-            require(request.getPassengerEmail(), "passengerEmail"),
-            defaultText(request.getPassengerName(), request.getPassengerEmail()),
+            passengerEmail,
+            passengerName,
             normalizeProviderType(require(request.getProviderType(), "providerType")),
             defaultText(request.getPickupLabel(), "Pickup"),
             request.getPickupLatitude(),
@@ -45,7 +50,11 @@ public class RideRequestService {
 
     @Transactional(readOnly = true)
     public List<RideRequestView> listPassengerRequests(String passengerEmail) {
-        return repository.findByPassengerEmailOrderByCreatedAtDesc(passengerEmail)
+        String resolvedPassengerEmail = resolvePassengerEmail(passengerEmail);
+        if (resolvedPassengerEmail.isBlank()) {
+            return List.of();
+        }
+        return repository.findByPassengerEmailOrderByCreatedAtDesc(resolvedPassengerEmail)
             .stream()
             .map(this::toView)
             .toList();
@@ -140,5 +149,12 @@ public class RideRequestService {
 
     private String normalizeProviderType(String value) {
         return value.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private String resolvePassengerEmail(String requestedEmail) {
+        if (requestedEmail != null && !requestedEmail.isBlank()) {
+            return requestedEmail.trim().toLowerCase(Locale.ROOT);
+        }
+        return tokenService.currentUser().map(user -> user.email().trim().toLowerCase(Locale.ROOT)).orElse("");
     }
 }

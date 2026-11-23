@@ -42,6 +42,10 @@ public class AuthService {
         return tokenService.currentUser().orElseThrow(() -> new AccessDeniedException("No authenticated user"));
     }
 
+    public java.util.Optional<AuthUser> currentUserOptional() {
+        return tokenService.currentUser();
+    }
+
     public List<String> roles() {
         return currentUser().roles();
     }
