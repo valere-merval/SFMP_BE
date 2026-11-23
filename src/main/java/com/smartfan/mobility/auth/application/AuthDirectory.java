@@ -4,6 +4,7 @@ import com.smartfan.mobility.auth.domain.AuthAccountEntity;
 import com.smartfan.mobility.auth.domain.AuthAccountRepository;
 import com.smartfan.mobility.auth.domain.AuthUser;
 import com.smartfan.mobility.auth.domain.RegisterRequest;
+import com.smartfan.mobility.auth.domain.UserProfileRepository;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicLong;
@@ -17,11 +18,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthDirectory {
 
     private final AuthAccountRepository authAccountRepository;
+    private final UserProfileRepository userProfileRepository;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final AtomicLong sequence = new AtomicLong(1);
 
-    public AuthDirectory(AuthAccountRepository authAccountRepository) {
+    public AuthDirectory(AuthAccountRepository authAccountRepository, UserProfileRepository userProfileRepository) {
         this.authAccountRepository = authAccountRepository;
+        this.userProfileRepository = userProfileRepository;
         seedIfNeeded();
     }
 
@@ -60,7 +63,16 @@ public class AuthDirectory {
     public AuthUser resetPassword(String email, String newPassword) {
         String normalized = normalize(email);
         AuthAccountEntity current = authAccountRepository.findByEmailIgnoreCase(normalized)
-            .orElseThrow(() -> new IllegalArgumentException("Unknown email"));
+            .orElseGet(() -> userProfileRepository.findById(normalized)
+                .map(profile -> new AuthAccountEntity(
+                    nextId(),
+                    normalized,
+                    buildFullName(profile.getFirstName(), profile.getLastName(), normalized),
+                    "FAN",
+                    fallbackOrganizationFromProfile(profile.getCountry(), profile.getCity()),
+                    List.of("FAN"),
+                    passwordEncoder.encode("temporary")))
+                .orElseThrow(() -> new IllegalArgumentException("Unknown email")));
         current.setPasswordHash(passwordEncoder.encode(newPassword == null ? "" : newPassword));
         return authAccountRepository.save(current).toUser();
     }
@@ -107,6 +119,16 @@ public class AuthDirectory {
         }
         if (request.city() != null && !request.city().isBlank()) {
             return request.city().trim();
+        }
+        return "SFMP";
+    }
+
+    private static String fallbackOrganizationFromProfile(String country, String city) {
+        if (country != null && !country.isBlank()) {
+            return country.trim();
+        }
+        if (city != null && !city.isBlank()) {
+            return city.trim();
         }
         return "SFMP";
     }
