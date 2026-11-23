@@ -4,6 +4,7 @@ import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.Locale;
@@ -40,6 +41,27 @@ public class MediaStorageService {
                                 .object(objectKey)
                                 .stream(inputStream, file.getSize(), 5 * 1024 * 1024)
                                 .contentType(file.getContentType() == null ? "application/octet-stream" : file.getContentType())
+                                .build());
+            }
+            String url = publicBaseUrl + "/" + bucketName + "/" + objectKey;
+            return new UploadedAsset(objectKey, url);
+        } catch (Exception exception) {
+            throw new IllegalStateException("Unable to upload image", exception);
+        }
+    }
+
+    public UploadedAsset storeImage(byte[] bytes, String fileName, String contentType, String folder) {
+        try {
+            ensureBucket();
+            String extension = extensionOf(fileName, contentType);
+            String objectKey = folder + "/" + UUID.randomUUID() + extension;
+            try (InputStream inputStream = new ByteArrayInputStream(bytes)) {
+                minioClient.putObject(
+                        PutObjectArgs.builder()
+                                .bucket(bucketName)
+                                .object(objectKey)
+                                .stream(inputStream, bytes.length, 5 * 1024 * 1024)
+                                .contentType(contentType == null || contentType.isBlank() ? "application/octet-stream" : contentType)
                                 .build());
             }
             String url = publicBaseUrl + "/" + bucketName + "/" + objectKey;

@@ -65,6 +65,46 @@ public class UserProfileEntity {
         return email;
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public String getPhonePrefix() {
+        return phonePrefix;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public String getPreferredLanguage() {
+        return preferredLanguage;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
     public void update(String firstName, String lastName, String country, String city, String phonePrefix, String phone, String preferredLanguage, String photoUrl, LocalDateTime updatedAt) {
         this.firstName = firstName;
         this.lastName = lastName;
