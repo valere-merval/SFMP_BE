@@ -125,7 +125,7 @@ public class TransportProfileService {
     public TransportAvailabilityView setAvailability(String matchId, TransportAvailabilityRequest request) {
         AuthUser user = currentUser();
         TransportProfileEntity profile = profileRepository.findByOwnerEmail(user.email())
-                .orElseThrow(() -> new IllegalStateException("Create your transport profile first"));
+                .orElseGet(() -> createPlaceholderProfile(user));
         String safeMatchId = safe(matchId);
         LocalDateTime now = LocalDateTime.now();
         TransportProfileAvailabilityEntity entity = availabilityRepository.findByProfileIdAndMatchId(profile.getId(), safeMatchId)
@@ -154,10 +154,36 @@ public class TransportProfileService {
     public TransportAvailabilityView getAvailability(String matchId) {
         AuthUser user = currentUser();
         TransportProfileEntity profile = profileRepository.findByOwnerEmail(user.email())
-                .orElseThrow(() -> new IllegalStateException("Create your transport profile first"));
+                .orElseGet(() -> createPlaceholderProfile(user));
         return availabilityRepository.findByProfileIdAndMatchId(profile.getId(), safe(matchId))
                 .map(this::toAvailabilityView)
                 .orElseGet(() -> new TransportAvailabilityView("", profile.getId(), safe(matchId), matchTitle(matchId), false, false, "Not available", "", null, null));
+    }
+
+    private TransportProfileEntity createPlaceholderProfile(AuthUser user) {
+        LocalDateTime now = LocalDateTime.now();
+        TransportProfileEntity profile = new TransportProfileEntity(
+                normalizeId(user.email(), user.fullName(), user.email()),
+                user.email(),
+                user.fullName(),
+                "Taxi",
+                user.fullName(),
+                user.fullName(),
+                "Vehicle",
+                "N/A",
+                "",
+                "",
+                "Match zone",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "Visible to fans when available for the match.",
+                false,
+                now,
+                now);
+        return profileRepository.save(profile);
     }
 
     private TransportProfileView toView(TransportProfileEntity entity) {
