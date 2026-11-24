@@ -8,6 +8,7 @@ import java.util.UUID;
 public class RideRequestView {
     private UUID id;
     private String matchId;
+    private String matchTitle;
     private String providerType;
     private String passengerEmail;
     private String passengerName;
@@ -53,6 +54,14 @@ public class RideRequestView {
 
     public void setMatchId(String matchId) {
         this.matchId = matchId;
+    }
+
+    public String getMatchTitle() {
+        return matchTitle;
+    }
+
+    public void setMatchTitle(String matchTitle) {
+        this.matchTitle = matchTitle;
     }
 
     public String getProviderType() {

@@ -28,6 +28,7 @@ public class RideRequestService {
         RideRequestEntity entity = new RideRequestEntity();
         entity.setMatchId(request.getMatchId());
         entity.setProviderType(request.getProviderType());
+        entity.setMatchTitle(request.getMatchTitle());
         entity.setPassengerEmail(request.getPassengerEmail());
         entity.setPassengerName(request.getPassengerName());
         entity.setPickupLabel(request.getPickupLabel());
@@ -152,6 +153,7 @@ public class RideRequestService {
         RideRequestView view = new RideRequestView();
         view.setId(entity.getId());
         view.setMatchId(entity.getMatchId());
+        view.setMatchTitle(entity.getMatchTitle());
         view.setProviderType(entity.getProviderType());
         view.setPassengerEmail(entity.getPassengerEmail());
         view.setPassengerName(entity.getPassengerName());

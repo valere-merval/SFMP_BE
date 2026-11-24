@@ -26,6 +26,9 @@ public class RideRequestEntity {
     private String providerType;
 
     @Column(nullable = false)
+    private String matchTitle;
+
+    @Column(nullable = false)
     private String passengerEmail;
 
     @Column(nullable = false)
@@ -92,6 +95,14 @@ public class RideRequestEntity {
 
     public void setProviderType(String providerType) {
         this.providerType = providerType;
+    }
+
+    public String getMatchTitle() {
+        return matchTitle;
+    }
+
+    public void setMatchTitle(String matchTitle) {
+        this.matchTitle = matchTitle;
     }
 
     public String getPassengerEmail() {
