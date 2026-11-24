@@ -2,8 +2,7 @@ package com.smartfan.mobility.telemetry.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.smartfan.mobility.telemetry.domain.BehaviorEventEntity;
-import com.smartfan.mobility.telemetry.domain.BehaviorEventRepository;
+import com.smartfan.mobility.telemetry.application.BehaviorEventPipelineService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,10 +11,8 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -24,11 +21,11 @@ public class RequestAuditFilter extends OncePerRequestFilter {
 
     private static final Logger log = LoggerFactory.getLogger(RequestAuditFilter.class);
 
-    private final BehaviorEventRepository repository;
+    private final BehaviorEventPipelineService pipelineService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public RequestAuditFilter(BehaviorEventRepository repository) {
-        this.repository = repository;
+    public RequestAuditFilter(BehaviorEventPipelineService pipelineService) {
+        this.pipelineService = pipelineService;
     }
 
     @Override
@@ -77,19 +74,20 @@ public class RequestAuditFilter extends OncePerRequestFilter {
                 payload.put("errorMessage", failure.getMessage());
             }
 
-            repository.save(new BehaviorEventEntity(
-                UUID.randomUUID().toString(),
-                userId,
-                "http_request",
-                request.getMethod() + " " + request.getRequestURI(),
-                objectMapper.writeValueAsString(payload)
-            ));
+            pipelineService.record(
+                    userId,
+                    "http_request",
+                    request.getMethod() + " " + request.getRequestURI(),
+                    payload,
+                    "http_audit");
 
             log.info("AUDIT {} {} status={} user={} durationMs={}", request.getMethod(), request.getRequestURI(), response.getStatus(), userId, payload.get("durationMs"));
-        } catch (JsonProcessingException e) {
-            log.warn("Failed to serialize audit payload for {} {}", request.getMethod(), request.getRequestURI(), e);
         } catch (Exception e) {
-            log.warn("Failed to persist audit event for {} {}", request.getMethod(), request.getRequestURI(), e);
+            try {
+                log.warn("Failed to persist audit event for {} {}", request.getMethod(), request.getRequestURI(), e);
+            } catch (Exception ignored) {
+                // no-op
+            }
         }
     }
 }

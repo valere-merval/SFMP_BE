@@ -3,11 +3,10 @@ package com.smartfan.mobility.telemetry.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smartfan.mobility.shared.api.ApiResponse;
+import com.smartfan.mobility.telemetry.application.BehaviorEventPipelineService;
 import com.smartfan.mobility.telemetry.domain.BehaviorEventEntity;
-import com.smartfan.mobility.telemetry.domain.BehaviorEventRepository;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -24,23 +23,22 @@ public class BehaviorEventController {
 
     private static final Logger log = LoggerFactory.getLogger(BehaviorEventController.class);
 
-    private final BehaviorEventRepository repository;
+    private final BehaviorEventPipelineService pipelineService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public BehaviorEventController(BehaviorEventRepository repository) {
-        this.repository = repository;
+    public BehaviorEventController(BehaviorEventPipelineService pipelineService) {
+        this.pipelineService = pipelineService;
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ApiResponse<BehaviorEventRequest> create(@RequestBody BehaviorEventRequest request) {
-        String payloadJson = toJson(request.payload());
-        repository.save(new BehaviorEventEntity(
-                UUID.randomUUID().toString(),
+        pipelineService.record(
                 safe(request.userId()),
                 safe(request.eventType()),
                 safe(request.screen()),
-                payloadJson));
+                request.payload() == null ? Map.of() : request.payload(),
+                "telemetry_api");
         log.info("Telemetry event recorded: userId={} eventType={} screen={}", safe(request.userId()), safe(request.eventType()), safe(request.screen()));
         return ApiResponse.ok(request, "Behavior event recorded");
     }
@@ -48,15 +46,7 @@ public class BehaviorEventController {
     @GetMapping
     public ApiResponse<List<BehaviorEventEntity>> list() {
         log.info("Telemetry events requested");
-        return ApiResponse.ok(repository.findAllByOrderByCreatedAtDesc(), "Behavior events ready");
-    }
-
-    private String toJson(Object value) {
-        try {
-            return objectMapper.writeValueAsString(value == null ? Map.of() : value);
-        } catch (JsonProcessingException ex) {
-            return "{}";
-        }
+        return ApiResponse.ok(pipelineService.list(), "Behavior events ready");
     }
 
     private String safe(String value) {

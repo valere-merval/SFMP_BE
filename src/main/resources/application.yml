@@ -17,6 +17,20 @@ spring:
   flyway:
     default-schema: sfmp
     schemas: sfmp
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    admin:
+      fail-fast: false
+    listener:
+      missing-topics-fatal: false
+    consumer:
+      group-id: ${KAFKA_CONSUMER_GROUP_ID:sfmp-behavior-events}
+      auto-offset-reset: earliest
+    producer:
+      acks: all
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/sfmp}
 
 server:
   port: 8080
@@ -39,3 +53,9 @@ s3:
   endpoint: ${S3_ENDPOINT:http://localhost:9000}
   public-base-url: ${S3_PUBLIC_BASE_URL:http://localhost:9000}
   bucket: ${S3_BUCKET:sfmp-media}
+
+app:
+  telemetry:
+    topic: ${TELEMETRY_TOPIC:sfmp.behavior-events}
+    mongo-enabled: ${TELEMETRY_MONGO_ENABLED:true}
+    kafka-consumer-enabled: ${TELEMETRY_KAFKA_CONSUMER_ENABLED:false}
