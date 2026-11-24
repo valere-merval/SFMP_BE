@@ -4,25 +4,26 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "ride_requests", schema = "sfmp")
+@Table(name = "ride_requests")
 public class RideRequestEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(nullable = false)
     private String matchId;
 
     @Column(nullable = false)
-    private String matchTitle;
+    private String providerType;
 
     @Column(nullable = false)
     private String passengerEmail;
@@ -30,8 +31,7 @@ public class RideRequestEntity {
     @Column(nullable = false)
     private String passengerName;
 
-    @Column(nullable = false)
-    private String providerType;
+    private String passengerPhone;
 
     @Column(nullable = false)
     private String pickupLabel;
@@ -47,72 +47,28 @@ public class RideRequestEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private RideRequestStatus status = RideRequestStatus.PENDING;
+    private RideRequestStatus status;
 
     private String driverProfileId;
     private String driverDisplayName;
     private String driverPhone;
+    private String driverVehiclePlate;
+    private Double driverLatitude;
+    private Double driverLongitude;
+    private Double driverDistanceKm;
+    private Integer driverEtaMinutes;
+    private Double journeyDistanceKm;
+    private Integer journeyEtaMinutes;
+    private LocalDateTime pickupReachedAt;
+    private LocalDateTime tripStartedAt;
+    private LocalDateTime tripCompletedAt;
     private String responseNote;
-    private String note;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
     private LocalDateTime updatedAt;
-
-    protected RideRequestEntity() {
-    }
-
-    public RideRequestEntity(
-        UUID id,
-        String matchId,
-        String matchTitle,
-        String passengerEmail,
-        String passengerName,
-        String providerType,
-        String pickupLabel,
-        Double pickupLatitude,
-        Double pickupLongitude,
-        String destinationLabel,
-        Double destinationLatitude,
-        Double destinationLongitude,
-        String note
-    ) {
-        this.id = id;
-        this.matchId = matchId;
-        this.matchTitle = matchTitle;
-        this.passengerEmail = passengerEmail;
-        this.passengerName = passengerName;
-        this.providerType = providerType;
-        this.pickupLabel = pickupLabel;
-        this.pickupLatitude = pickupLatitude;
-        this.pickupLongitude = pickupLongitude;
-        this.destinationLabel = destinationLabel;
-        this.destinationLatitude = destinationLatitude;
-        this.destinationLongitude = destinationLongitude;
-        this.note = note;
-    }
-
-    @PrePersist
-    void prePersist() {
-        var now = LocalDateTime.now();
-        if (id == null) {
-            id = UUID.randomUUID();
-        }
-        if (createdAt == null) {
-            createdAt = now;
-        }
-        updatedAt = now;
-        if (status == null) {
-            status = RideRequestStatus.PENDING;
-        }
-    }
-
-    @PreUpdate
-    void preUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
 
     public UUID getId() {
         return id;
@@ -130,12 +86,12 @@ public class RideRequestEntity {
         this.matchId = matchId;
     }
 
-    public String getMatchTitle() {
-        return matchTitle;
+    public String getProviderType() {
+        return providerType;
     }
 
-    public void setMatchTitle(String matchTitle) {
-        this.matchTitle = matchTitle;
+    public void setProviderType(String providerType) {
+        this.providerType = providerType;
     }
 
     public String getPassengerEmail() {
@@ -154,12 +110,12 @@ public class RideRequestEntity {
         this.passengerName = passengerName;
     }
 
-    public String getProviderType() {
-        return providerType;
+    public String getPassengerPhone() {
+        return passengerPhone;
     }
 
-    public void setProviderType(String providerType) {
-        this.providerType = providerType;
+    public void setPassengerPhone(String passengerPhone) {
+        this.passengerPhone = passengerPhone;
     }
 
     public String getPickupLabel() {
@@ -242,20 +198,92 @@ public class RideRequestEntity {
         this.driverPhone = driverPhone;
     }
 
+    public String getDriverVehiclePlate() {
+        return driverVehiclePlate;
+    }
+
+    public void setDriverVehiclePlate(String driverVehiclePlate) {
+        this.driverVehiclePlate = driverVehiclePlate;
+    }
+
+    public Double getDriverLatitude() {
+        return driverLatitude;
+    }
+
+    public void setDriverLatitude(Double driverLatitude) {
+        this.driverLatitude = driverLatitude;
+    }
+
+    public Double getDriverLongitude() {
+        return driverLongitude;
+    }
+
+    public void setDriverLongitude(Double driverLongitude) {
+        this.driverLongitude = driverLongitude;
+    }
+
+    public Double getDriverDistanceKm() {
+        return driverDistanceKm;
+    }
+
+    public void setDriverDistanceKm(Double driverDistanceKm) {
+        this.driverDistanceKm = driverDistanceKm;
+    }
+
+    public Integer getDriverEtaMinutes() {
+        return driverEtaMinutes;
+    }
+
+    public void setDriverEtaMinutes(Integer driverEtaMinutes) {
+        this.driverEtaMinutes = driverEtaMinutes;
+    }
+
+    public Double getJourneyDistanceKm() {
+        return journeyDistanceKm;
+    }
+
+    public void setJourneyDistanceKm(Double journeyDistanceKm) {
+        this.journeyDistanceKm = journeyDistanceKm;
+    }
+
+    public Integer getJourneyEtaMinutes() {
+        return journeyEtaMinutes;
+    }
+
+    public void setJourneyEtaMinutes(Integer journeyEtaMinutes) {
+        this.journeyEtaMinutes = journeyEtaMinutes;
+    }
+
+    public LocalDateTime getPickupReachedAt() {
+        return pickupReachedAt;
+    }
+
+    public void setPickupReachedAt(LocalDateTime pickupReachedAt) {
+        this.pickupReachedAt = pickupReachedAt;
+    }
+
+    public LocalDateTime getTripStartedAt() {
+        return tripStartedAt;
+    }
+
+    public void setTripStartedAt(LocalDateTime tripStartedAt) {
+        this.tripStartedAt = tripStartedAt;
+    }
+
+    public LocalDateTime getTripCompletedAt() {
+        return tripCompletedAt;
+    }
+
+    public void setTripCompletedAt(LocalDateTime tripCompletedAt) {
+        this.tripCompletedAt = tripCompletedAt;
+    }
+
     public String getResponseNote() {
         return responseNote;
     }
 
     public void setResponseNote(String responseNote) {
         this.responseNote = responseNote;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
     }
 
     public LocalDateTime getCreatedAt() {

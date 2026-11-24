@@ -11,4 +11,6 @@ public interface RideRequestRepository extends JpaRepository<RideRequestEntity, 
     List<RideRequestEntity> findByMatchIdAndProviderTypeAndStatusOrderByCreatedAtDesc(String matchId, String providerType, RideRequestStatus status);
 
     List<RideRequestEntity> findByMatchIdAndStatusOrderByCreatedAtDesc(String matchId, RideRequestStatus status);
+
+    List<RideRequestEntity> findByDriverProfileIdOrderByUpdatedAtDesc(String driverProfileId);
 }
