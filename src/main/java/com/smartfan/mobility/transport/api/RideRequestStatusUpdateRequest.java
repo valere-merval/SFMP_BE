@@ -5,6 +5,8 @@ public class RideRequestStatusUpdateRequest {
     private String driverDisplayName;
     private String driverPhone;
     private String driverVehiclePlate;
+    private String driverVehicleLabel;
+    private String driverVehicleImageUrl;
     private Double driverLatitude;
     private Double driverLongitude;
     private Double driverDistanceKm;
@@ -41,6 +43,22 @@ public class RideRequestStatusUpdateRequest {
 
     public void setDriverVehiclePlate(String driverVehiclePlate) {
         this.driverVehiclePlate = driverVehiclePlate;
+    }
+
+    public String getDriverVehicleLabel() {
+        return driverVehicleLabel;
+    }
+
+    public void setDriverVehicleLabel(String driverVehicleLabel) {
+        this.driverVehicleLabel = driverVehicleLabel;
+    }
+
+    public String getDriverVehicleImageUrl() {
+        return driverVehicleImageUrl;
+    }
+
+    public void setDriverVehicleImageUrl(String driverVehicleImageUrl) {
+        this.driverVehicleImageUrl = driverVehicleImageUrl;
     }
 
     public Double getDriverLatitude() {

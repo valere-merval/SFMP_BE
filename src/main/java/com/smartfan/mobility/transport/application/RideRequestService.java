@@ -3,6 +3,7 @@ package com.smartfan.mobility.transport.application;
 import com.smartfan.mobility.transport.api.RideRequestCreateRequest;
 import com.smartfan.mobility.transport.api.RideRequestStatusUpdateRequest;
 import com.smartfan.mobility.transport.api.RideRequestView;
+import com.smartfan.mobility.transport.application.TransportProfileService;
 import com.smartfan.mobility.transport.domain.RideRequestEntity;
 import com.smartfan.mobility.transport.domain.RideRequestRepository;
 import com.smartfan.mobility.transport.domain.RideRequestStatus;
@@ -19,9 +20,11 @@ import java.util.UUID;
 public class RideRequestService {
     private static final double DEFAULT_DRIVER_OFFSET_DEGREES = 0.012;
     private final RideRequestRepository repository;
+    private final TransportProfileService transportProfileService;
 
-    public RideRequestService(RideRequestRepository repository) {
+    public RideRequestService(RideRequestRepository repository, TransportProfileService transportProfileService) {
         this.repository = repository;
+        this.transportProfileService = transportProfileService;
     }
 
     public RideRequestView create(RideRequestCreateRequest request) {
@@ -75,6 +78,26 @@ public class RideRequestService {
         entity.setDriverDisplayName(normalize(request.getDriverDisplayName()));
         entity.setDriverPhone(normalize(request.getDriverPhone()));
         entity.setDriverVehiclePlate(normalize(request.getDriverVehiclePlate()));
+        entity.setDriverVehicleLabel(normalize(request.getDriverVehicleLabel()));
+        entity.setDriverVehicleImageUrl(normalize(request.getDriverVehicleImageUrl()));
+        if (entity.getDriverProfileId() == null || entity.getDriverDisplayName() == null || entity.getDriverVehiclePlate() == null || entity.getDriverVehicleLabel() == null || entity.getDriverVehicleImageUrl() == null) {
+            var driverProfile = transportProfileService.me();
+            if (entity.getDriverProfileId() == null) {
+                entity.setDriverProfileId(driverProfile.ownerEmail());
+            }
+            if (entity.getDriverDisplayName() == null) {
+                entity.setDriverDisplayName(firstNonBlank(driverProfile.displayName(), driverProfile.driverName(), driverProfile.ownerName(), driverProfile.ownerEmail()));
+            }
+            if (entity.getDriverVehiclePlate() == null) {
+                entity.setDriverVehiclePlate(normalize(driverProfile.vehiclePlate()));
+            }
+            if (entity.getDriverVehicleLabel() == null) {
+                entity.setDriverVehicleLabel(normalize(driverProfile.vehicleLabel()));
+            }
+            if (entity.getDriverVehicleImageUrl() == null) {
+                entity.setDriverVehicleImageUrl(normalize(driverProfile.vehicleImageUrl()));
+            }
+        }
         entity.setResponseNote(normalize(request.getResponseNote()));
         if (request.getDriverLatitude() != null && request.getDriverLongitude() != null) {
             entity.setDriverLatitude(request.getDriverLatitude());
@@ -169,6 +192,8 @@ public class RideRequestService {
         view.setDriverDisplayName(entity.getDriverDisplayName());
         view.setDriverPhone(entity.getDriverPhone());
         view.setDriverVehiclePlate(entity.getDriverVehiclePlate());
+        view.setDriverVehicleLabel(entity.getDriverVehicleLabel());
+        view.setDriverVehicleImageUrl(entity.getDriverVehicleImageUrl());
         view.setDriverLatitude(entity.getDriverLatitude());
         view.setDriverLongitude(entity.getDriverLongitude());
         view.setDriverDistanceKm(entity.getDriverDistanceKm());
@@ -214,6 +239,15 @@ public class RideRequestService {
 
     private String normalize(String value) {
         return value == null || value.isBlank() ? null : value.trim();
+    }
+
+    private String firstNonBlank(String... values) {
+        for (String value : values) {
+            if (value != null && !value.isBlank()) {
+                return value.trim();
+            }
+        }
+        return null;
     }
 
     private boolean matchesProviderType(String requestProviderType, String driverProviderType) {
