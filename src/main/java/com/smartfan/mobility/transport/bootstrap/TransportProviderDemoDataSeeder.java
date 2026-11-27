@@ -2,6 +2,10 @@ package com.smartfan.mobility.transport.bootstrap;
 
 import com.smartfan.mobility.transport.domain.TransportProviderEntity;
 import com.smartfan.mobility.transport.domain.TransportProviderRepository;
+import com.smartfan.mobility.transport.domain.TransportProfileAvailabilityEntity;
+import com.smartfan.mobility.transport.domain.TransportProfileAvailabilityRepository;
+import com.smartfan.mobility.transport.domain.TransportProfileEntity;
+import com.smartfan.mobility.transport.domain.TransportProfileRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,26 +17,63 @@ import org.springframework.transaction.annotation.Transactional;
 public class TransportProviderDemoDataSeeder implements CommandLineRunner {
 
     private final TransportProviderRepository transportProviderRepository;
+    private final TransportProfileRepository transportProfileRepository;
+    private final TransportProfileAvailabilityRepository availabilityRepository;
 
-    public TransportProviderDemoDataSeeder(TransportProviderRepository transportProviderRepository) {
+    public TransportProviderDemoDataSeeder(
+            TransportProviderRepository transportProviderRepository,
+            TransportProfileRepository transportProfileRepository,
+            TransportProfileAvailabilityRepository availabilityRepository) {
         this.transportProviderRepository = transportProviderRepository;
+        this.transportProfileRepository = transportProfileRepository;
+        this.availabilityRepository = availabilityRepository;
     }
 
     @Override
     @Transactional
     public void run(String... args) {
-        if (transportProviderRepository.count() > 0) {
-            return;
+        if (transportProviderRepository.count() == 0) {
+            List<TransportProviderEntity> providers = new ArrayList<>();
+            for (VenueSeed venue : demoVenues()) {
+                providers.add(provider(venue, "Train", "Rail Link", "Platform 2", "TRN-" + venue.idSuffix().toUpperCase(), 0.010, 0.008, "Main rail connection to the stadium"));
+                providers.add(provider(venue, "Bus", "Express Bus", "Stop A", "BUS-" + venue.idSuffix().toUpperCase(), -0.006, 0.005, "Direct bus from the city center"));
+                providers.add(provider(venue, "Tram", "Arena Tram", "Stop T", "TRM-" + venue.idSuffix().toUpperCase(), 0.004, -0.005, "Tram line serving the matchday crowd"));
+                providers.add(provider(venue, "Bike", "Bike Dock", "Dock B", "BIK-" + venue.idSuffix().toUpperCase(), 0.002, 0.002, "Bike dock within a short walk"));
+                providers.add(provider(venue, "Scooter", "Scooter Bay", "Bay S", "SCO-" + venue.idSuffix().toUpperCase(), -0.002, -0.002, "Scooter bay near the fan zone"));
+            }
+            transportProviderRepository.saveAll(providers);
         }
-        List<TransportProviderEntity> providers = new ArrayList<>();
-        for (VenueSeed venue : demoVenues()) {
-            providers.add(provider(venue, "Train", "Rail Link", "Platform 2", "TRN-" + venue.idSuffix().toUpperCase(), 0.010, 0.008, "Main rail connection to the stadium"));
-            providers.add(provider(venue, "Bus", "Express Bus", "Stop A", "BUS-" + venue.idSuffix().toUpperCase(), -0.006, 0.005, "Direct bus from the city center"));
-            providers.add(provider(venue, "Tram", "Arena Tram", "Stop T", "TRM-" + venue.idSuffix().toUpperCase(), 0.004, -0.005, "Tram line serving the matchday crowd"));
-            providers.add(provider(venue, "Bike", "Bike Dock", "Dock B", "BIK-" + venue.idSuffix().toUpperCase(), 0.002, 0.002, "Bike dock within a short walk"));
-            providers.add(provider(venue, "Scooter", "Scooter Bay", "Bay S", "SCO-" + venue.idSuffix().toUpperCase(), -0.002, -0.002, "Scooter bay near the fan zone"));
+
+        if (transportProfileRepository.count() == 0) {
+            List<TransportProfileEntity> profiles = new ArrayList<>();
+            LocalDateTime now = LocalDateTime.now();
+            for (VenueSeed venue : demoVenues()) {
+                profiles.add(profile(venue, "Train", "Rail Link", "Platform 2", "TRN-" + venue.idSuffix().toUpperCase(), now));
+                profiles.add(profile(venue, "Bus", "Express Bus", "Stop A", "BUS-" + venue.idSuffix().toUpperCase(), now));
+                profiles.add(profile(venue, "Tram", "Arena Tram", "Stop T", "TRM-" + venue.idSuffix().toUpperCase(), now));
+                profiles.add(profile(venue, "Bike", "Bike Dock", "Dock B", "BIK-" + venue.idSuffix().toUpperCase(), now));
+                profiles.add(profile(venue, "Scooter", "Scooter Bay", "Bay S", "SCO-" + venue.idSuffix().toUpperCase(), now));
+            }
+            transportProfileRepository.saveAll(profiles);
         }
-        transportProviderRepository.saveAll(providers);
+
+        if (availabilityRepository.count() == 0) {
+            List<TransportProfileAvailabilityEntity> availabilities = new ArrayList<>();
+            LocalDateTime now = LocalDateTime.now();
+            for (TransportProfileEntity profile : transportProfileRepository.findAll()) {
+                availabilities.add(new TransportProfileAvailabilityEntity(
+                        profile.getId() + "-availability",
+                        profile.getId(),
+                        profile.getId().substring(0, profile.getId().lastIndexOf('-')),
+                        true,
+                        true,
+                        "Available",
+                        "Demo data seeded at startup",
+                        now,
+                        now));
+            }
+            availabilityRepository.saveAll(availabilities);
+        }
     }
 
     private TransportProviderEntity provider(VenueSeed venue, String type, String displayName, String vehicleLabel, String plate, double latOffset, double lonOffset, String publicNotes) {
@@ -59,6 +100,31 @@ public class TransportProviderDemoDataSeeder implements CommandLineRunner {
                 "Demo data seeded at startup",
                 publicNotes,
                 LocalDateTime.now());
+    }
+
+    private TransportProfileEntity profile(VenueSeed venue, String type, String displayName, String vehicleLabel, String plate, LocalDateTime now) {
+        String id = venue.idSuffix() + '-' + type.toLowerCase();
+        return new TransportProfileEntity(
+                id,
+                "demo+" + id + "@sfmp.local",
+                displayName + " Operator",
+                type,
+                venue.city() + ' ' + displayName,
+                displayName + " Ops",
+                vehicleLabel,
+                plate,
+                venue.city(),
+                venue.country(),
+                venue.stadium(),
+                "",
+                "",
+                "",
+                "",
+                "Demo data seeded at startup",
+                type + " available for matchday fans.",
+                true,
+                now,
+                now);
     }
 
     private List<VenueSeed> demoVenues() {

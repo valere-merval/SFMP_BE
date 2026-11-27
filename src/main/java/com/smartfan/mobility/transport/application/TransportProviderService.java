@@ -18,10 +18,15 @@ public class TransportProviderService {
 
     private final TransportProviderRepository transportProviderRepository;
     private final MatchRepository matchRepository;
+    private final TransportGeocodingService geocodingService;
 
-    public TransportProviderService(TransportProviderRepository transportProviderRepository, MatchRepository matchRepository) {
+    public TransportProviderService(
+            TransportProviderRepository transportProviderRepository,
+            MatchRepository matchRepository,
+            TransportGeocodingService geocodingService) {
         this.transportProviderRepository = transportProviderRepository;
         this.matchRepository = matchRepository;
+        this.geocodingService = geocodingService;
     }
 
     @Transactional(readOnly = true)
@@ -37,6 +42,8 @@ public class TransportProviderService {
     @Transactional
     public TransportProviderAdminView create(TransportProviderCreateRequest request) {
         String id = normalizeId(request.id(), request.displayName(), request.vehiclePlate());
+        String stationAddress = safe(request.stationAddress(), buildStationAddress(request.city(), request.country(), request.zone()));
+        TransportGeocodingService.Coordinate coordinate = coordinateFor(request.stationLatitude(), request.stationLongitude(), stationAddress);
         TransportProviderEntity entity = new TransportProviderEntity(
                 id,
                 safe(request.matchId()),
@@ -48,6 +55,9 @@ public class TransportProviderService {
                 safe(request.city(), ""),
                 safe(request.country(), ""),
                 safe(request.zone(), "Match zone"),
+                stationAddress,
+                coordinate == null ? null : coordinate.latitude(),
+                coordinate == null ? null : coordinate.longitude(),
                 safe(request.status(), "Available"),
                 request.active() == null || request.active(),
                 safe(request.permitUrl(), ""),
@@ -62,13 +72,10 @@ public class TransportProviderService {
     }
 
     private List<TransportProviderEntity> stream(String matchId) {
-        List<TransportProviderEntity> providers;
         if (matchId == null || matchId.isBlank()) {
-            providers = transportProviderRepository.findAllByOrderByCreatedAtDesc();
-        } else {
-            providers = transportProviderRepository.findByMatchIdOrderByCreatedAtDesc(matchId);
+            return transportProviderRepository.findAllByOrderByCreatedAtDesc();
         }
-        return providers;
+        return transportProviderRepository.findByMatchIdOrderByCreatedAtDesc(matchId);
     }
 
     private FixtureCatalogue.TransportProviderView toPublicView(TransportProviderEntity entity) {
@@ -84,7 +91,10 @@ public class TransportProviderService {
                 entity.isActive(),
                 entity.getCity(),
                 entity.getCountry(),
-                "",
+                entity.getStationAddress(),
+                entity.getStationLatitude(),
+                entity.getStationLongitude(),
+                entity.getDisplayName(),
                 entity.getDriverName(),
                 entity.getVehiclePlate(),
                 entity.isActive(),
@@ -104,6 +114,9 @@ public class TransportProviderService {
                 entity.getCity(),
                 entity.getCountry(),
                 entity.getZone(),
+                entity.getStationAddress(),
+                entity.getStationLatitude(),
+                entity.getStationLongitude(),
                 entity.getStatus(),
                 entity.isActive(),
                 entity.getPermitUrl(),
@@ -113,6 +126,32 @@ public class TransportProviderService {
                 entity.getNotes(),
                 entity.getPublicNotes(),
                 entity.getCreatedAt());
+    }
+
+    private TransportGeocodingService.Coordinate coordinateFor(Double latitude, Double longitude, String stationAddress) {
+        if (latitude != null && longitude != null && Double.isFinite(latitude) && Double.isFinite(longitude)) {
+            return new TransportGeocodingService.Coordinate(latitude, longitude);
+        }
+        return geocodingService.resolve(stationAddress).orElse(null);
+    }
+
+    private String buildStationAddress(String city, String country, String zone) {
+        StringBuilder builder = new StringBuilder();
+        append(builder, zone);
+        append(builder, city);
+        append(builder, country);
+        return builder.length() == 0 ? "" : builder.toString();
+    }
+
+    private void append(StringBuilder builder, String value) {
+        String cleaned = safe(value);
+        if (cleaned.isBlank()) {
+            return;
+        }
+        if (builder.length() > 0) {
+            builder.append(", ");
+        }
+        builder.append(cleaned);
     }
 
     private String matchTitle(String matchId) {
@@ -145,4 +184,5 @@ public class TransportProviderService {
     private String safe(String value, String fallback) {
         return value == null || value.isBlank() ? fallback : value.trim();
     }
+
 }
