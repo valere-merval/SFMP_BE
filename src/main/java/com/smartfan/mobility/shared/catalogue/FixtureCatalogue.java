@@ -2,6 +2,7 @@ package com.smartfan.mobility.shared.catalogue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -50,7 +51,7 @@ public final class FixtureCatalogue {
     public record VenueView(String id, String name, String city, String zoneCount, String accessPoints, String capacity) {
     }
 
-    public record MobilityOptionView(String id, String mode, String duration, String price, String status, String highlight) {
+    public record MobilityOptionView(String id, String mode, String duration, String price, String status, String highlight, String stationAddress, Double latitude, Double longitude, String assetType) {
     }
 
     public record BookingView(String id, String fanName, String eventName, String option, String status, String departureTime) {
@@ -113,7 +114,7 @@ public final class FixtureCatalogue {
     public record IntegrationView(String id, String name, String status, String endpoint) {
     }
 
-    public record TransportProviderView(String id, String matchId, String matchTitle, String providerType, String displayName, String vehicleLabel, String zone, String status, boolean active, String city, String country, String ownerName, String driverName, String vehiclePlate, boolean ready, String publicNotes) {
+    public record TransportProviderView(String id, String matchId, String matchTitle, String providerType, String displayName, String vehicleLabel, String zone, String status, boolean active, String city, String country, String stationAddress, Double stationLatitude, Double stationLongitude, String ownerName, String driverName, String vehiclePlate, boolean ready, String publicNotes) {
     }
 
     public record CatalogueSnapshot(
@@ -154,7 +155,7 @@ public final class FixtureCatalogue {
                 eventCatalogs(),
                 matches(),
                 List.of(),
-                List.of(),
+                demoMobilityOptions(),
                 List.of(),
                 List.of(),
                 List.of(),
@@ -179,6 +180,34 @@ public final class FixtureCatalogue {
                 List.of(),
                 List.of(),
                 List.of());
+    }
+
+    private static List<MobilityOptionView> demoMobilityOptions() {
+        List<MobilityOptionView> options = new ArrayList<>();
+        for (MobilitySeed seed : List.of(
+                new MobilitySeed("bernabeu", "Santiago Bernabéu", 40.4531, -3.6883),
+                new MobilitySeed("metropolitano", "Riyadh Air Metropolitano", 40.4362, -3.5997),
+                new MobilitySeed("campnou", "Spotify Camp Nou", 41.3809, 2.1228),
+                new MobilitySeed("veltins", "Veltins-Arena", 51.5549, 7.0677),
+                new MobilitySeed("allianz-munich", "Allianz Arena", 48.2188, 11.6247),
+                new MobilitySeed("signal", "Signal Iduna Park", 51.4926, 7.4519),
+                new MobilitySeed("wembley", "Wembley Stadium", 51.5560, -0.2796),
+                new MobilitySeed("bridge", "Stamford Bridge", 51.4817, -0.1905),
+                new MobilitySeed("anfield", "Anfield", 53.4308, -2.9608),
+                new MobilitySeed("oldtrafford", "Old Trafford", 53.4631, -2.2913),
+                new MobilitySeed("etihad", "Etihad Stadium", 53.4831, -2.2004),
+                new MobilitySeed("san-siro", "Stadio San Siro", 45.4781, 9.1240),
+                new MobilitySeed("allianz-turin", "Allianz Stadium", 45.1096, 7.6410),
+                new MobilitySeed("parc", "Parc des Princes", 48.8414, 2.2530),
+                new MobilitySeed("velodrome", "Orange Vélodrome", 43.2698, 5.3957),
+                new MobilitySeed("groupama", "Groupama Stadium", 45.7650, 4.9821))) {
+            options.add(new MobilityOptionView(seed.id() + "-bike", "Bike", "4 min walk", "Free", "Available", seed.stadium() + " north dock", seed.stadium() + " Bike Dock", seed.latitude() + 0.0011, seed.longitude() + 0.0011, "bike"));
+            options.add(new MobilityOptionView(seed.id() + "-scooter", "Scooter", "3 min walk", "€1.20", "Available", seed.stadium() + " east row", seed.stadium() + " Scooter Bay", seed.latitude() - 0.0011, seed.longitude() - 0.0011, "scooter"));
+        }
+        return List.copyOf(options);
+    }
+
+    private record MobilitySeed(String id, String stadium, double latitude, double longitude) {
     }
 
     public static List<EventView> events() {

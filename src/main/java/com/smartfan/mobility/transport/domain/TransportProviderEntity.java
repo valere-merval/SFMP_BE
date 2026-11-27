@@ -40,6 +40,15 @@ public class TransportProviderEntity {
     @Column(nullable = false)
     private String zone;
 
+    @Column(nullable = false, length = 2048)
+    private String stationAddress;
+
+    @Column
+    private Double stationLatitude;
+
+    @Column
+    private Double stationLongitude;
+
     @Column(nullable = false)
     private String status;
 
@@ -70,7 +79,29 @@ public class TransportProviderEntity {
     protected TransportProviderEntity() {
     }
 
-    public TransportProviderEntity(String id, String matchId, String providerType, String displayName, String driverName, String vehicleLabel, String vehiclePlate, String city, String country, String zone, String status, boolean active, String permitUrl, String registrationUrl, String driverLicenseUrl, String vehicleImageUrl, String notes, String publicNotes, LocalDateTime createdAt) {
+    public TransportProviderEntity(
+            String id,
+            String matchId,
+            String providerType,
+            String displayName,
+            String driverName,
+            String vehicleLabel,
+            String vehiclePlate,
+            String city,
+            String country,
+            String zone,
+            String stationAddress,
+            Double stationLatitude,
+            Double stationLongitude,
+            String status,
+            boolean active,
+            String permitUrl,
+            String registrationUrl,
+            String driverLicenseUrl,
+            String vehicleImageUrl,
+            String notes,
+            String publicNotes,
+            LocalDateTime createdAt) {
         this.id = id;
         this.matchId = matchId;
         this.providerType = providerType;
@@ -81,6 +112,9 @@ public class TransportProviderEntity {
         this.city = city;
         this.country = country;
         this.zone = zone;
+        this.stationAddress = stationAddress;
+        this.stationLatitude = stationLatitude;
+        this.stationLongitude = stationLongitude;
         this.status = status;
         this.active = active;
         this.permitUrl = permitUrl;
@@ -102,6 +136,9 @@ public class TransportProviderEntity {
     public String getCity() { return city; }
     public String getCountry() { return country; }
     public String getZone() { return zone; }
+    public String getStationAddress() { return stationAddress; }
+    public Double getStationLatitude() { return stationLatitude; }
+    public Double getStationLongitude() { return stationLongitude; }
     public String getStatus() { return status; }
     public boolean isActive() { return active; }
     public String getPermitUrl() { return permitUrl; }
