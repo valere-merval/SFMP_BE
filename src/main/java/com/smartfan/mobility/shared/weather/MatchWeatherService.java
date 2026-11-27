@@ -23,19 +23,22 @@ public class MatchWeatherService {
     private final String apiKey;
     private final String model;
     private final String baseUrl;
+    private final boolean remoteEnabled;
 
     public MatchWeatherService(
             @Value("${OPENAI_API_KEY:}") String apiKey,
             @Value("${OPENAI_MODEL:gpt-5.3-mini}") String model,
-            @Value("${OPENAI_BASE_URL:https://api.openai.com/v1}") String baseUrl) {
+            @Value("${OPENAI_BASE_URL:https://api.openai.com/v1}") String baseUrl,
+            @Value("${openai.remote-enabled:true}") boolean remoteEnabled) {
         this.apiKey = apiKey;
         this.model = model;
         this.baseUrl = baseUrl;
+        this.remoteEnabled = remoteEnabled;
         this.httpClient = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(20)).build();
     }
 
     public MatchWeatherSnapshot enrich(String city, String country, String venue, LocalDate date, String time) {
-        if (apiKey == null || apiKey.isBlank()) {
+        if (!remoteEnabled || apiKey == null || apiKey.isBlank()) {
             return fallback(city, country, venue, time);
         }
 

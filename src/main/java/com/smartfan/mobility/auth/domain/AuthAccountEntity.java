@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Locale;
 
 @Entity
-@Table(name = "auth_accounts")
+@Table(name = "auth_accounts", schema = "sfmp")
 public class AuthAccountEntity {
 
     @Id

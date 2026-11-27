@@ -1,0 +1,5 @@
+openai:
+  remote-enabled: false
+app:
+  telemetry:
+    enabled: false

@@ -18,31 +18,53 @@ public class BehaviorEventPipelineService {
     private final BehaviorEventRepository jpaRepository;
     private final BehaviorEventMongoRepository mongoRepository;
     private final BehaviorEventPublisher publisher;
+    private final boolean telemetryEnabled;
 
     public BehaviorEventPipelineService(
             BehaviorEventRepository jpaRepository,
             BehaviorEventMongoRepository mongoRepository,
-            BehaviorEventPublisher publisher) {
+            BehaviorEventPublisher publisher,
+            @org.springframework.beans.factory.annotation.Value("${app.telemetry.enabled:true}") boolean telemetryEnabled) {
         this.jpaRepository = jpaRepository;
         this.mongoRepository = mongoRepository;
         this.publisher = publisher;
+        this.telemetryEnabled = telemetryEnabled;
     }
 
     public BehaviorEventEntity record(String userId, String eventType, String screen, Map<String, Object> payload, String source) {
-        BehaviorEventMessage message = publisher.record(userId, eventType, screen, payload, source);
+        BehaviorEventMessage message = telemetryEnabled
+                ? publisher.record(userId, eventType, screen, payload, source)
+                : new BehaviorEventMessage(
+                        java.util.UUID.randomUUID().toString(),
+                        userId,
+                        eventType,
+                        screen,
+                        toJson(payload),
+                        source,
+                        java.time.Instant.now());
         BehaviorEventEntity entity = jpaRepository.save(new BehaviorEventEntity(
                 message.id(),
                 message.userId(),
                 message.eventType(),
                 message.screen(),
                 message.payloadJson()));
-        try {
-            mongoRepository.save(BehaviorEventDocument.from(message));
-            log.info("Mirrored telemetry event to Mongo: id={} source={} eventType={} screen={}", message.id(), source, message.eventType(), message.screen());
-        } catch (Exception ex) {
-            log.warn("Mongo mirror failed for telemetry event id={} eventType={} screen={}", message.id(), message.eventType(), message.screen(), ex);
+        if (telemetryEnabled) {
+            try {
+                mongoRepository.save(BehaviorEventDocument.from(message));
+                log.info("Mirrored telemetry event to Mongo: id={} source={} eventType={} screen={}", message.id(), source, message.eventType(), message.screen());
+            } catch (Exception ex) {
+                log.warn("Mongo mirror failed for telemetry event id={} eventType={} screen={}", message.id(), message.eventType(), message.screen(), ex);
+            }
         }
         return entity;
+    }
+
+    private String toJson(Map<String, Object> payload) {
+        try {
+            return new com.fasterxml.jackson.databind.ObjectMapper().findAndRegisterModules().writeValueAsString(payload == null ? Map.of() : payload);
+        } catch (Exception ex) {
+            return "{}";
+        }
     }
 
     public List<BehaviorEventEntity> list() {

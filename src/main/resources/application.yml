@@ -46,6 +46,7 @@ management:
         enabled: true
 
 openai:
+  remote-enabled: ${OPENAI_REMOTE_ENABLED:true}
   model: ${OPENAI_MODEL:gpt-5.3-mini}
   base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
 
@@ -56,6 +57,7 @@ s3:
 
 app:
   telemetry:
+    enabled: ${APP_TELEMETRY_ENABLED:true}
     topic: ${TELEMETRY_TOPIC:sfmp.behavior-events}
     mongo-enabled: ${TELEMETRY_MONGO_ENABLED:true}
     kafka-consumer-enabled: ${TELEMETRY_KAFKA_CONSUMER_ENABLED:false}

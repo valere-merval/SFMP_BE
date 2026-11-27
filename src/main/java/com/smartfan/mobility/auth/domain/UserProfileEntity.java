@@ -7,7 +7,7 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "user_profiles")
+@Table(name = "user_profiles", schema = "sfmp")
 public class UserProfileEntity {
 
     @Id

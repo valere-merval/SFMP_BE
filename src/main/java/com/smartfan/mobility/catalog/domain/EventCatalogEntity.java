@@ -11,7 +11,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import jakarta.persistence.EntityListeners;
 
 @Entity
-@Table(name = "event_catalogs")
+@Table(name = "event_catalogs", schema = "sfmp")
 @EntityListeners(AuditingEntityListener.class)
 public class EventCatalogEntity {
 
