@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,17 +17,17 @@ public class BehaviorEventPipelineService {
     private static final Logger log = LoggerFactory.getLogger(BehaviorEventPipelineService.class);
 
     private final BehaviorEventRepository jpaRepository;
-    private final BehaviorEventMongoRepository mongoRepository;
+    private final ObjectProvider<BehaviorEventMongoRepository> mongoRepositoryProvider;
     private final BehaviorEventPublisher publisher;
     private final boolean telemetryEnabled;
 
     public BehaviorEventPipelineService(
             BehaviorEventRepository jpaRepository,
-            BehaviorEventMongoRepository mongoRepository,
+            ObjectProvider<BehaviorEventMongoRepository> mongoRepositoryProvider,
             BehaviorEventPublisher publisher,
             @org.springframework.beans.factory.annotation.Value("${app.telemetry.enabled:true}") boolean telemetryEnabled) {
         this.jpaRepository = jpaRepository;
-        this.mongoRepository = mongoRepository;
+        this.mongoRepositoryProvider = mongoRepositoryProvider;
         this.publisher = publisher;
         this.telemetryEnabled = telemetryEnabled;
     }
@@ -49,11 +50,16 @@ public class BehaviorEventPipelineService {
                 message.screen(),
                 message.payloadJson()));
         if (telemetryEnabled) {
-            try {
-                mongoRepository.save(BehaviorEventDocument.from(message));
-                log.info("Mirrored telemetry event to Mongo: id={} source={} eventType={} screen={}", message.id(), source, message.eventType(), message.screen());
-            } catch (Exception ex) {
-                log.warn("Mongo mirror failed for telemetry event id={} eventType={} screen={}", message.id(), message.eventType(), message.screen(), ex);
+            BehaviorEventMongoRepository mongoRepository = mongoRepositoryProvider.getIfAvailable();
+            if (mongoRepository != null) {
+                try {
+                    mongoRepository.save(BehaviorEventDocument.from(message));
+                    log.info("Mirrored telemetry event to Mongo: id={} source={} eventType={} screen={}", message.id(), source, message.eventType(), message.screen());
+                } catch (Exception ex) {
+                    log.warn("Mongo mirror failed for telemetry event id={} eventType={} screen={}", message.id(), message.eventType(), message.screen(), ex);
+                }
+            } else {
+                log.debug("Mongo telemetry repository unavailable, skipping mirror for id={} eventType={} screen={}", message.id(), message.eventType(), message.screen());
             }
         }
         return entity;

@@ -5,6 +5,7 @@ import com.smartfan.mobility.telemetry.mongo.BehaviorEventDocument;
 import com.smartfan.mobility.telemetry.mongo.BehaviorEventMongoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -16,14 +17,14 @@ public class BehaviorEventKafkaConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(BehaviorEventKafkaConsumer.class);
 
-    private final BehaviorEventMongoRepository mongoRepository;
+    private final ObjectProvider<BehaviorEventMongoRepository> mongoRepositoryProvider;
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
     private final String topic;
 
     public BehaviorEventKafkaConsumer(
-            BehaviorEventMongoRepository mongoRepository,
+            ObjectProvider<BehaviorEventMongoRepository> mongoRepositoryProvider,
             @Value("${app.telemetry.topic:sfmp.behavior-events}") String topic) {
-        this.mongoRepository = mongoRepository;
+        this.mongoRepositoryProvider = mongoRepositoryProvider;
         this.topic = topic;
     }
 
@@ -34,8 +35,13 @@ public class BehaviorEventKafkaConsumer {
     public void onMessage(String payload) {
         try {
             BehaviorEventMessage message = objectMapper.readValue(payload, BehaviorEventMessage.class);
-            mongoRepository.save(BehaviorEventDocument.from(message));
-            log.info("Mirrored telemetry event from Kafka to Mongo: id={} topic={} eventType={} screen={}", message.id(), topic, message.eventType(), message.screen());
+            BehaviorEventMongoRepository mongoRepository = mongoRepositoryProvider.getIfAvailable();
+            if (mongoRepository != null) {
+                mongoRepository.save(BehaviorEventDocument.from(message));
+                log.info("Mirrored telemetry event from Kafka to Mongo: id={} topic={} eventType={} screen={}", message.id(), topic, message.eventType(), message.screen());
+            } else {
+                log.debug("Mongo telemetry repository unavailable, skipping Kafka mirror for id={} topic={}", message.id(), topic);
+            }
         } catch (Exception ex) {
             log.warn("Failed to consume telemetry event from Kafka topic={}", topic, ex);
         }
