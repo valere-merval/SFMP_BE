@@ -42,6 +42,7 @@ public class TransportProviderDemoDataSeeder implements CommandLineRunner {
                 providers.add(provider(match, "Train", "Rail Link", "Platform 2", "TRN-" + match.id().toUpperCase(), 0.010, 0.008, "Main rail connection to the stadium", createdAt));
                 providers.add(provider(match, "Bus", "Express Bus", "Stop A", "BUS-" + match.id().toUpperCase(), -0.006, 0.005, "Direct bus from the city center", createdAt));
                 providers.add(provider(match, "Tram", "Arena Tram", "Stop T", "TRM-" + match.id().toUpperCase(), 0.004, -0.005, "Tram line serving the matchday crowd", createdAt));
+                providers.add(provider(match, "Metro", "Metro Line", "Underground Gate", "MET-" + match.id().toUpperCase(), -0.002, -0.008, "Metro connection for the matchday crowd", createdAt));
             }
             transportProviderRepository.saveAll(providers);
         }
@@ -53,6 +54,7 @@ public class TransportProviderDemoDataSeeder implements CommandLineRunner {
                 profiles.add(profile(match, "Train", "Rail Link", "Platform 2", "TRN-" + match.id().toUpperCase(), now));
                 profiles.add(profile(match, "Bus", "Express Bus", "Stop A", "BUS-" + match.id().toUpperCase(), now));
                 profiles.add(profile(match, "Tram", "Arena Tram", "Stop T", "TRM-" + match.id().toUpperCase(), now));
+                profiles.add(profile(match, "Metro", "Metro Line", "Underground Gate", "MET-" + match.id().toUpperCase(), now));
             }
             transportProfileRepository.saveAll(profiles);
         }

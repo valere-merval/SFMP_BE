@@ -120,8 +120,8 @@ public final class CompetitionDemoData {
                         "champions-league",
                         "Real Madrid",
                         "Bayern München",
-                        flagUrl("es"),
-                        flagUrl("de"),
+                        clubBadgeUrl("Real Madrid"),
+                        clubBadgeUrl("Bayern München"),
                         "Madrid",
                         "Spain",
                         "Santiago Bernabéu",
@@ -142,8 +142,8 @@ public final class CompetitionDemoData {
                         "champions-league",
                         "Manchester City",
                         "Paris Saint-Germain",
-                        flagUrl("gb"),
-                        flagUrl("fr"),
+                        clubBadgeUrl("Manchester City"),
+                        clubBadgeUrl("Paris Saint-Germain"),
                         "Manchester",
                         "United Kingdom",
                         "Etihad Stadium",
@@ -164,8 +164,8 @@ public final class CompetitionDemoData {
                         "champions-league",
                         "FC Barcelona",
                         "Inter Milan",
-                        flagUrl("es"),
-                        flagUrl("it"),
+                        clubBadgeUrl("FC Barcelona"),
+                        clubBadgeUrl("Inter Milan"),
                         "Barcelona",
                         "Spain",
                         "Spotify Camp Nou",
@@ -186,8 +186,8 @@ public final class CompetitionDemoData {
                         "bundesliga",
                         "Bayern München",
                         "Borussia Dortmund",
-                        flagUrl("de"),
-                        flagUrl("de"),
+                        clubBadgeUrl("Bayern München"),
+                        clubBadgeUrl("Borussia Dortmund"),
                         "Munich",
                         "Germany",
                         "Allianz Arena",
@@ -208,8 +208,8 @@ public final class CompetitionDemoData {
                         "bundesliga",
                         "Schalke 04",
                         "RB Leipzig",
-                        flagUrl("de"),
-                        flagUrl("de"),
+                        clubBadgeUrl("Schalke 04"),
+                        clubBadgeUrl("RB Leipzig"),
                         "Gelsenkirchen",
                         "Germany",
                         "Veltins-Arena",
@@ -230,8 +230,8 @@ public final class CompetitionDemoData {
                         "bundesliga",
                         "Eintracht Frankfurt",
                         "Bayer Leverkusen",
-                        flagUrl("de"),
-                        flagUrl("de"),
+                        clubBadgeUrl("Eintracht Frankfurt"),
+                        clubBadgeUrl("Bayer Leverkusen"),
                         "Frankfurt",
                         "Germany",
                         "Deutsche Bank Park",
@@ -252,8 +252,8 @@ public final class CompetitionDemoData {
                         "ligue-1",
                         "Paris Saint-Germain",
                         "Marseille",
-                        flagUrl("fr"),
-                        flagUrl("fr"),
+                        clubBadgeUrl("Paris Saint-Germain"),
+                        clubBadgeUrl("Marseille"),
                         "Paris",
                         "France",
                         "Parc des Princes",
@@ -274,8 +274,8 @@ public final class CompetitionDemoData {
                         "ligue-1",
                         "Lyon",
                         "Lille",
-                        flagUrl("fr"),
-                        flagUrl("fr"),
+                        clubBadgeUrl("Lyon"),
+                        clubBadgeUrl("Lille"),
                         "Lyon",
                         "France",
                         "Groupama Stadium",
@@ -296,8 +296,8 @@ public final class CompetitionDemoData {
                         "ligue-1",
                         "Monaco",
                         "Nice",
-                        flagUrl("fr"),
-                        flagUrl("fr"),
+                        clubBadgeUrl("Monaco"),
+                        clubBadgeUrl("Nice"),
                         "Monaco",
                         "Monaco",
                         "Stade Louis II",
@@ -318,8 +318,8 @@ public final class CompetitionDemoData {
                         "la-liga",
                         "Atlético Madrid",
                         "Real Madrid",
-                        flagUrl("es"),
-                        flagUrl("es"),
+                        clubBadgeUrl("Atlético Madrid"),
+                        clubBadgeUrl("Real Madrid"),
                         "Madrid",
                         "Spain",
                         "Riyadh Air Metropolitano",
@@ -340,8 +340,8 @@ public final class CompetitionDemoData {
                         "la-liga",
                         "FC Barcelona",
                         "Sevilla",
-                        flagUrl("es"),
-                        flagUrl("es"),
+                        clubBadgeUrl("FC Barcelona"),
+                        clubBadgeUrl("Sevilla"),
                         "Barcelona",
                         "Spain",
                         "Spotify Camp Nou",
@@ -362,8 +362,8 @@ public final class CompetitionDemoData {
                         "la-liga",
                         "Valencia",
                         "Athletic Club",
-                        flagUrl("es"),
-                        flagUrl("es"),
+                        clubBadgeUrl("Valencia"),
+                        clubBadgeUrl("Athletic Club"),
                         "Valencia",
                         "Spain",
                         "Mestalla Stadium",
@@ -547,12 +547,78 @@ public final class CompetitionDemoData {
         return imageUrl(stadium + " " + city + " stadium");
     }
 
+    public static String clubBadgeUrl(String teamName) {
+        return badgeSvg(teamName, teamInitials(teamName), "#0f172a", "#c8f36a");
+    }
+
     public static String flagUrl(String iso2) {
         return "https://flagcdn.com/w80/" + iso2.toLowerCase(Locale.ROOT) + ".png";
     }
 
+    private static String teamInitials(String teamName) {
+        String[] parts = teamName.replace('-', ' ').trim().split("\s+");
+        StringBuilder builder = new StringBuilder();
+        for (String part : parts) {
+            if (!part.isBlank()) {
+                builder.append(Character.toUpperCase(part.charAt(0)));
+            }
+            if (builder.length() >= 3) {
+                break;
+            }
+        }
+        return builder.length() > 0 ? builder.toString() : "FC";
+    }
+
     private static String imageUrl(String query) {
-        String encoded = URLEncoder.encode(query, StandardCharsets.UTF_8).replace("+", "%20");
-        return "https://source.unsplash.com/featured/1200x800/?" + encoded;
+        String label = sanitizeLabel(query);
+        String colorA = paletteColor(label, 0);
+        String colorB = paletteColor(label, 1);
+        String initials = teamInitials(label);
+        String svg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800'>"
+                + "<defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>"
+                + "<stop offset='0%' stop-color='" + colorA + "'/>"
+                + "<stop offset='100%' stop-color='" + colorB + "'/></linearGradient></defs>"
+                + "<rect width='1200' height='800' fill='url(#g)'/>"
+                + "<circle cx='900' cy='180' r='160' fill='rgba(255,255,255,0.08)'/>"
+                + "<circle cx='240' cy='640' r='220' fill='rgba(255,255,255,0.08)'/>"
+                + "<text x='80' y='210' fill='#ffffff' font-family='Poppins,Arial,sans-serif' font-size='68' font-weight='700'>" + escapeXml(label) + "</text>"
+                + "<text x='80' y='290' fill='rgba(255,255,255,0.92)' font-family='Poppins,Arial,sans-serif' font-size='32'>Smart Fan Mobility</text>"
+                + "<rect x='80' y='530' rx='28' ry='28' width='140' height='140' fill='rgba(255,255,255,0.18)' stroke='rgba(255,255,255,0.45)'/>"
+                + "<text x='150' y='620' text-anchor='middle' fill='#ffffff' font-family='Poppins,Arial,sans-serif' font-size='52' font-weight='700'>" + escapeXml(initials) + "</text>"
+                + "</svg>";
+        return svgDataUri(svg);
+    }
+
+    private static String badgeSvg(String label, String initials, String background, String foreground) {
+        String svg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'>"
+                + "<rect width='80' height='80' rx='20' ry='20' fill='" + background + "'/>"
+                + "<circle cx='40' cy='40' r='30' fill='rgba(255,255,255,0.08)'/>"
+                + "<text x='40' y='49' text-anchor='middle' fill='" + foreground + "' font-family='Poppins,Arial,sans-serif' font-size='28' font-weight='700'>" + escapeXml(initials) + "</text>"
+                + "</svg>";
+        return svgDataUri(svg);
+    }
+
+    private static String svgDataUri(String svg) {
+        return "data:image/svg+xml;charset=utf-8," + URLEncoder.encode(svg, StandardCharsets.UTF_8);
+    }
+
+    private static String sanitizeLabel(String query) {
+        String cleaned = query == null ? "" : query.replaceAll("\s+", " ").trim();
+        return cleaned.isBlank() ? "Stadium" : cleaned;
+    }
+
+    private static String paletteColor(String label, int shift) {
+        String[] palette = {"0f172a", "1d4ed8", "7c3aed", "0f766e", "c2410c", "be123c", "15803d", "92400e"};
+        int index = Math.floorMod(label.toLowerCase(Locale.ROOT).hashCode() + shift, palette.length);
+        return "#" + palette[index];
+    }
+
+    private static String escapeXml(String text) {
+        return text
+                .replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&apos;");
     }
 }
