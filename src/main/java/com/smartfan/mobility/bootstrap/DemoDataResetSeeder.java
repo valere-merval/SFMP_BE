@@ -28,14 +28,10 @@ public class DemoDataResetSeeder implements CommandLineRunner {
         jdbcTemplate.execute((Connection connection) -> {
             List<String> tables = new ArrayList<>();
             DatabaseMetaData metaData = connection.getMetaData();
-            try (ResultSet rs = metaData.getTables(connection.getCatalog(), null, "%", new String[]{"TABLE"})) {
+            try (ResultSet rs = metaData.getTables(connection.getCatalog(), "sfmp", "%", new String[]{"TABLE"})) {
                 while (rs.next()) {
-                    String schema = rs.getString("TABLE_SCHEM");
                     String name = rs.getString("TABLE_NAME");
                     if (name == null || "flyway_schema_history".equalsIgnoreCase(name)) {
-                        continue;
-                    }
-                    if (schema != null && !"public".equalsIgnoreCase(schema) && !"PUBLIC".equalsIgnoreCase(schema)) {
                         continue;
                     }
                     tables.add(name);
