@@ -29,9 +29,8 @@ public class CatalogMatchDemoDataSeeder implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
-        if (eventCatalogRepository.count() > 0 || matchRepository.count() > 0) {
-            return;
-        }
+        matchRepository.deleteAllInBatch();
+        eventCatalogRepository.deleteAllInBatch();
 
         List<CompetitionDemoData.MatchSeed> matches = CompetitionDemoData.matchSeeds();
         Map<String, Long> counts = matches.stream().collect(Collectors.groupingBy(CompetitionDemoData.MatchSeed::catalogId, HashMap::new, Collectors.counting()));

@@ -22,9 +22,7 @@ public class MobilityOptionDemoDataSeeder implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
-        if (mobilityOptionRepository.count() > 0) {
-            return;
-        }
+        mobilityOptionRepository.deleteAllInBatch();
 
         LocalDateTime now = LocalDateTime.now();
         for (CompetitionDemoData.MobilitySeed seed : CompetitionDemoData.mobilitySeeds()) {

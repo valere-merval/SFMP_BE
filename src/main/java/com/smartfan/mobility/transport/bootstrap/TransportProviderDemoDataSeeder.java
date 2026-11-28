@@ -35,41 +35,39 @@ public class TransportProviderDemoDataSeeder implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
-        if (transportProviderRepository.count() == 0) {
-            List<TransportProviderEntity> providers = new ArrayList<>();
-            LocalDateTime createdAt = LocalDateTime.now();
-            for (CompetitionDemoData.MatchSeed match : CompetitionDemoData.matchSeeds()) {
-                providers.add(provider(match, "Train", "Rail Link", "Platform 2", "TRN-" + match.id().toUpperCase(), 0.010, 0.008, "Main rail connection to the stadium", createdAt));
-                providers.add(provider(match, "Bus", "Express Bus", "Stop A", "BUS-" + match.id().toUpperCase(), -0.006, 0.005, "Direct bus from the city center", createdAt));
-                providers.add(provider(match, "Tram", "Arena Tram", "Stop T", "TRM-" + match.id().toUpperCase(), 0.004, -0.005, "Tram line serving the matchday crowd", createdAt));
-                providers.add(provider(match, "Metro", "Metro Line", "Underground Gate", "MET-" + match.id().toUpperCase(), -0.002, -0.008, "Metro connection for the matchday crowd", createdAt));
-            }
-            transportProviderRepository.saveAll(providers);
-        }
+        availabilityRepository.deleteAllInBatch();
+        transportProfileRepository.deleteAllInBatch();
+        transportProviderRepository.deleteAllInBatch();
 
-        if (transportProfileRepository.count() == 0) {
-            List<TransportProfileEntity> profiles = new ArrayList<>();
-            LocalDateTime now = LocalDateTime.now();
-            for (CompetitionDemoData.MatchSeed match : CompetitionDemoData.matchSeeds()) {
-                profiles.add(profile(match, "Train", "Rail Link", "Platform 2", "TRN-" + match.id().toUpperCase(), now));
-                profiles.add(profile(match, "Bus", "Express Bus", "Stop A", "BUS-" + match.id().toUpperCase(), now));
-                profiles.add(profile(match, "Tram", "Arena Tram", "Stop T", "TRM-" + match.id().toUpperCase(), now));
-                profiles.add(profile(match, "Metro", "Metro Line", "Underground Gate", "MET-" + match.id().toUpperCase(), now));
-            }
-            transportProfileRepository.saveAll(profiles);
+        List<TransportProviderEntity> providers = new ArrayList<>();
+        LocalDateTime createdAt = LocalDateTime.now();
+        for (CompetitionDemoData.MatchSeed match : CompetitionDemoData.matchSeeds()) {
+            providers.add(provider(match, "Train", "Rail Link", "Platform 2", "TRN-" + match.id().toUpperCase(), 0.010, 0.008, "Main rail connection to the stadium", createdAt));
+            providers.add(provider(match, "Bus", "Express Bus", "Stop A", "BUS-" + match.id().toUpperCase(), -0.006, 0.005, "Direct bus from the city center", createdAt));
+            providers.add(provider(match, "Tram", "Arena Tram", "Stop T", "TRM-" + match.id().toUpperCase(), 0.004, -0.005, "Tram line serving the matchday crowd", createdAt));
+            providers.add(provider(match, "Metro", "Metro Line", "Underground Gate", "MET-" + match.id().toUpperCase(), -0.002, -0.008, "Metro connection for the matchday crowd", createdAt));
         }
+        transportProviderRepository.saveAll(providers);
 
-        if (availabilityRepository.count() == 0) {
-            List<TransportProfileAvailabilityEntity> availabilities = new ArrayList<>();
-            LocalDateTime now = LocalDateTime.now();
-            for (CompetitionDemoData.MatchSeed match : CompetitionDemoData.matchSeeds()) {
-                availabilities.add(availability(match, "Train", now));
-                availabilities.add(availability(match, "Bus", now));
-                availabilities.add(availability(match, "Tram", now));
-                availabilities.add(availability(match, "Metro", now));
-            }
-            availabilityRepository.saveAll(availabilities);
+        List<TransportProfileEntity> profiles = new ArrayList<>();
+        LocalDateTime profileNow = LocalDateTime.now();
+        for (CompetitionDemoData.MatchSeed match : CompetitionDemoData.matchSeeds()) {
+            profiles.add(profile(match, "Train", "Rail Link", "Platform 2", "TRN-" + match.id().toUpperCase(), profileNow));
+            profiles.add(profile(match, "Bus", "Express Bus", "Stop A", "BUS-" + match.id().toUpperCase(), profileNow));
+            profiles.add(profile(match, "Tram", "Arena Tram", "Stop T", "TRM-" + match.id().toUpperCase(), profileNow));
+            profiles.add(profile(match, "Metro", "Metro Line", "Underground Gate", "MET-" + match.id().toUpperCase(), profileNow));
         }
+        transportProfileRepository.saveAll(profiles);
+
+        List<TransportProfileAvailabilityEntity> availabilities = new ArrayList<>();
+        LocalDateTime availabilityNow = LocalDateTime.now();
+        for (CompetitionDemoData.MatchSeed match : CompetitionDemoData.matchSeeds()) {
+            availabilities.add(availability(match, "Train", availabilityNow));
+            availabilities.add(availability(match, "Bus", availabilityNow));
+            availabilities.add(availability(match, "Tram", availabilityNow));
+            availabilities.add(availability(match, "Metro", availabilityNow));
+        }
+        availabilityRepository.saveAll(availabilities);
     }
 
     private TransportProfileAvailabilityEntity availability(CompetitionDemoData.MatchSeed match, String type, LocalDateTime now) {
