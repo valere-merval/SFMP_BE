@@ -57,7 +57,7 @@ s3:
 
 app:
   telemetry:
-    enabled: ${APP_TELEMETRY_ENABLED:true}
+    enabled: ${APP_TELEMETRY_ENABLED:false}
     topic: ${TELEMETRY_TOPIC:sfmp.behavior-events}
     mongo-enabled: ${TELEMETRY_MONGO_ENABLED:true}
     kafka-consumer-enabled: ${TELEMETRY_KAFKA_CONSUMER_ENABLED:false}
