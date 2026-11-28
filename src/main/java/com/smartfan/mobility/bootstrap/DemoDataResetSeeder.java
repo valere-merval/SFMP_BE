@@ -1,5 +1,10 @@
 package com.smartfan.mobility.bootstrap;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
@@ -20,13 +25,27 @@ public class DemoDataResetSeeder implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
-        List<String> tables = jdbcTemplate.queryForList(
-                "SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename <> 'flyway_schema_history'",
-                String.class);
-        if (tables.isEmpty()) {
-            return;
-        }
-        String joined = String.join(", ", tables.stream().map(name -> '"' + name + '"').toList());
-        jdbcTemplate.execute("TRUNCATE TABLE " + joined + " RESTART IDENTITY CASCADE");
+        jdbcTemplate.execute((Connection connection) -> {
+            List<String> tables = new ArrayList<>();
+            DatabaseMetaData metaData = connection.getMetaData();
+            try (ResultSet rs = metaData.getTables(connection.getCatalog(), null, "%", new String[]{"TABLE"})) {
+                while (rs.next()) {
+                    String schema = rs.getString("TABLE_SCHEM");
+                    String name = rs.getString("TABLE_NAME");
+                    if (name == null || "flyway_schema_history".equalsIgnoreCase(name)) {
+                        continue;
+                    }
+                    if (schema != null && !"public".equalsIgnoreCase(schema) && !"PUBLIC".equalsIgnoreCase(schema)) {
+                        continue;
+                    }
+                    tables.add(name);
+                }
+            }
+            if (!tables.isEmpty()) {
+                String joined = String.join(", ", tables.stream().map(name -> '"' + name + '"').toList());
+                jdbcTemplate.execute("TRUNCATE TABLE " + joined + " RESTART IDENTITY CASCADE");
+            }
+            return null;
+        });
     }
 }
