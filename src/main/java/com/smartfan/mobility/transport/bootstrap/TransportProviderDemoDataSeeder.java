@@ -12,10 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Profile("flyway-java-demo")
 @Order(20)
 public class TransportProviderDemoDataSeeder implements CommandLineRunner {
 

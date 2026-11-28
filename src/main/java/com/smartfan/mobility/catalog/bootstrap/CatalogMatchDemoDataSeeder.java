@@ -11,10 +11,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Profile("flyway-java-demo")
 @Order(10)
 public class CatalogMatchDemoDataSeeder implements CommandLineRunner {
 

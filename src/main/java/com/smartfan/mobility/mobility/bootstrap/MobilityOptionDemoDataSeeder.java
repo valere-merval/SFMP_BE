@@ -6,10 +6,12 @@ import com.smartfan.mobility.shared.bootstrap.CompetitionDemoData;
 import java.time.LocalDateTime;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Profile("flyway-java-demo")
 @Order(30)
 public class MobilityOptionDemoDataSeeder implements CommandLineRunner {
 
