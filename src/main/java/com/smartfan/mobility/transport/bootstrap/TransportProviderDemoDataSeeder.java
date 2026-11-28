@@ -1,6 +1,6 @@
 package com.smartfan.mobility.transport.bootstrap;
 
-import com.smartfan.mobility.shared.bootstrap.DemoVenueData;
+import com.smartfan.mobility.shared.bootstrap.CompetitionDemoData;
 import com.smartfan.mobility.transport.domain.TransportProfileAvailabilityEntity;
 import com.smartfan.mobility.transport.domain.TransportProfileAvailabilityRepository;
 import com.smartfan.mobility.transport.domain.TransportProfileEntity;
@@ -11,10 +11,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Order(20)
 public class TransportProviderDemoDataSeeder implements CommandLineRunner {
 
     private final TransportProviderRepository transportProviderRepository;
@@ -36,10 +38,10 @@ public class TransportProviderDemoDataSeeder implements CommandLineRunner {
         if (transportProviderRepository.count() == 0) {
             List<TransportProviderEntity> providers = new ArrayList<>();
             LocalDateTime createdAt = LocalDateTime.now();
-            for (DemoVenueData.VenueSeed venue : DemoVenueData.matchSeeds()) {
-                providers.add(provider(venue, "Train", "Rail Link", "Platform 2", "TRN-" + venue.matchId().toUpperCase(), 0.010, 0.008, "Main rail connection to the stadium", createdAt));
-                providers.add(provider(venue, "Bus", "Express Bus", "Stop A", "BUS-" + venue.matchId().toUpperCase(), -0.006, 0.005, "Direct bus from the city center", createdAt));
-                providers.add(provider(venue, "Tram", "Arena Tram", "Stop T", "TRM-" + venue.matchId().toUpperCase(), 0.004, -0.005, "Tram line serving the matchday crowd", createdAt));
+            for (CompetitionDemoData.MatchSeed match : CompetitionDemoData.matchSeeds()) {
+                providers.add(provider(match, "Train", "Rail Link", "Platform 2", "TRN-" + match.id().toUpperCase(), 0.010, 0.008, "Main rail connection to the stadium", createdAt));
+                providers.add(provider(match, "Bus", "Express Bus", "Stop A", "BUS-" + match.id().toUpperCase(), -0.006, 0.005, "Direct bus from the city center", createdAt));
+                providers.add(provider(match, "Tram", "Arena Tram", "Stop T", "TRM-" + match.id().toUpperCase(), 0.004, -0.005, "Tram line serving the matchday crowd", createdAt));
             }
             transportProviderRepository.saveAll(providers);
         }
@@ -47,10 +49,10 @@ public class TransportProviderDemoDataSeeder implements CommandLineRunner {
         if (transportProfileRepository.count() == 0) {
             List<TransportProfileEntity> profiles = new ArrayList<>();
             LocalDateTime now = LocalDateTime.now();
-            for (DemoVenueData.VenueSeed venue : DemoVenueData.matchSeeds()) {
-                profiles.add(profile(venue, "Train", "Rail Link", "Platform 2", "TRN-" + venue.matchId().toUpperCase(), now));
-                profiles.add(profile(venue, "Bus", "Express Bus", "Stop A", "BUS-" + venue.matchId().toUpperCase(), now));
-                profiles.add(profile(venue, "Tram", "Arena Tram", "Stop T", "TRM-" + venue.matchId().toUpperCase(), now));
+            for (CompetitionDemoData.MatchSeed match : CompetitionDemoData.matchSeeds()) {
+                profiles.add(profile(match, "Train", "Rail Link", "Platform 2", "TRN-" + match.id().toUpperCase(), now));
+                profiles.add(profile(match, "Bus", "Express Bus", "Stop A", "BUS-" + match.id().toUpperCase(), now));
+                profiles.add(profile(match, "Tram", "Arena Tram", "Stop T", "TRM-" + match.id().toUpperCase(), now));
             }
             transportProfileRepository.saveAll(profiles);
         }
@@ -75,7 +77,7 @@ public class TransportProviderDemoDataSeeder implements CommandLineRunner {
     }
 
     private TransportProviderEntity provider(
-            DemoVenueData.VenueSeed venue,
+            CompetitionDemoData.MatchSeed match,
             String type,
             String displayName,
             String vehicleLabel,
@@ -85,19 +87,19 @@ public class TransportProviderDemoDataSeeder implements CommandLineRunner {
             String publicNotes,
             LocalDateTime createdAt) {
         return new TransportProviderEntity(
-                venue.matchId() + '-' + type.toLowerCase(),
-                venue.matchId(),
+                match.id() + '-' + type.toLowerCase(),
+                match.id(),
                 type,
-                venue.city() + ' ' + displayName,
+                match.city() + ' ' + displayName,
                 displayName + " Ops",
                 vehicleLabel,
                 plate,
-                venue.city(),
-                venue.country(),
-                venue.stadium(),
-                venue.stadium() + ", " + venue.city() + ", " + venue.country(),
-                venue.latitude() + latOffset,
-                venue.longitude() + lonOffset,
+                match.city(),
+                match.country(),
+                match.venue(),
+                match.venue() + ", " + match.city() + ", " + match.country(),
+                match.latitude() + latOffset,
+                match.longitude() + lonOffset,
                 "Available",
                 true,
                 "",
@@ -110,25 +112,25 @@ public class TransportProviderDemoDataSeeder implements CommandLineRunner {
     }
 
     private TransportProfileEntity profile(
-            DemoVenueData.VenueSeed venue,
+            CompetitionDemoData.MatchSeed match,
             String type,
             String displayName,
             String vehicleLabel,
             String plate,
             LocalDateTime now) {
-        String id = venue.matchId() + '-' + type.toLowerCase();
+        String id = match.id() + '-' + type.toLowerCase();
         return new TransportProfileEntity(
                 id,
                 "demo+" + id + "@sfmp.local",
                 displayName + " Operator",
                 type,
-                venue.city() + ' ' + displayName,
+                match.city() + ' ' + displayName,
                 displayName + " Ops",
                 vehicleLabel,
                 plate,
-                venue.city(),
-                venue.country(),
-                venue.stadium(),
+                match.city(),
+                match.country(),
+                match.venue(),
                 "",
                 "",
                 "",

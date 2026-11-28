@@ -2,13 +2,15 @@ package com.smartfan.mobility.mobility.bootstrap;
 
 import com.smartfan.mobility.mobility.domain.MobilityOptionEntity;
 import com.smartfan.mobility.mobility.domain.MobilityOptionRepository;
-import com.smartfan.mobility.shared.bootstrap.DemoVenueData;
+import com.smartfan.mobility.shared.bootstrap.CompetitionDemoData;
 import java.time.LocalDateTime;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Order(30)
 public class MobilityOptionDemoDataSeeder implements CommandLineRunner {
 
     private final MobilityOptionRepository mobilityOptionRepository;
@@ -25,7 +27,7 @@ public class MobilityOptionDemoDataSeeder implements CommandLineRunner {
         }
 
         LocalDateTime now = LocalDateTime.now();
-        for (DemoVenueData.MobilitySeed seed : DemoVenueData.mobilitySeeds()) {
+        for (CompetitionDemoData.MobilitySeed seed : CompetitionDemoData.mobilitySeeds()) {
             mobilityOptionRepository.save(new MobilityOptionEntity(
                     seed.id() + "-bike",
                     "Bike",
