@@ -62,20 +62,28 @@ public class TransportProviderDemoDataSeeder implements CommandLineRunner {
         if (availabilityRepository.count() == 0) {
             List<TransportProfileAvailabilityEntity> availabilities = new ArrayList<>();
             LocalDateTime now = LocalDateTime.now();
-            for (TransportProfileEntity profile : transportProfileRepository.findAll()) {
-                availabilities.add(new TransportProfileAvailabilityEntity(
-                        profile.getId() + "-availability",
-                        profile.getId(),
-                        profile.getId().substring(0, profile.getId().lastIndexOf('-')),
-                        true,
-                        true,
-                        "Available",
-                        "Demo data seeded at startup",
-                        now,
-                        now));
+            for (CompetitionDemoData.MatchSeed match : CompetitionDemoData.matchSeeds()) {
+                availabilities.add(availability(match, "Train", now));
+                availabilities.add(availability(match, "Bus", now));
+                availabilities.add(availability(match, "Tram", now));
+                availabilities.add(availability(match, "Metro", now));
             }
             availabilityRepository.saveAll(availabilities);
         }
+    }
+
+    private TransportProfileAvailabilityEntity availability(CompetitionDemoData.MatchSeed match, String type, LocalDateTime now) {
+        String profileId = match.id() + '-' + type.toLowerCase();
+        return new TransportProfileAvailabilityEntity(
+                match.id() + '-' + type.toLowerCase() + "-availability",
+                profileId,
+                match.id(),
+                true,
+                true,
+                "Available",
+                "Demo data seeded at startup",
+                now,
+                now);
     }
 
     private TransportProviderEntity provider(
