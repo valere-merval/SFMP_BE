@@ -1,13 +1,9 @@
 package com.smartfan.mobility.bootstrap;
 
-import com.smartfan.mobility.catalog.domain.EventCatalogRepository;
-import com.smartfan.mobility.matches.domain.MatchRepository;
-import com.smartfan.mobility.mobility.domain.MobilityOptionRepository;
-import com.smartfan.mobility.transport.domain.TransportProfileAvailabilityRepository;
-import com.smartfan.mobility.transport.domain.TransportProfileRepository;
-import com.smartfan.mobility.transport.domain.TransportProviderRepository;
+import java.util.List;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,36 +11,22 @@ import org.springframework.transaction.annotation.Transactional;
 @Order(0)
 public class DemoDataResetSeeder implements CommandLineRunner {
 
-    private final TransportProfileAvailabilityRepository availabilityRepository;
-    private final TransportProviderRepository transportProviderRepository;
-    private final TransportProfileRepository transportProfileRepository;
-    private final MobilityOptionRepository mobilityOptionRepository;
-    private final MatchRepository matchRepository;
-    private final EventCatalogRepository eventCatalogRepository;
+    private final JdbcTemplate jdbcTemplate;
 
-    public DemoDataResetSeeder(
-            TransportProfileAvailabilityRepository availabilityRepository,
-            TransportProviderRepository transportProviderRepository,
-            TransportProfileRepository transportProfileRepository,
-            MobilityOptionRepository mobilityOptionRepository,
-            MatchRepository matchRepository,
-            EventCatalogRepository eventCatalogRepository) {
-        this.availabilityRepository = availabilityRepository;
-        this.transportProviderRepository = transportProviderRepository;
-        this.transportProfileRepository = transportProfileRepository;
-        this.mobilityOptionRepository = mobilityOptionRepository;
-        this.matchRepository = matchRepository;
-        this.eventCatalogRepository = eventCatalogRepository;
+    public DemoDataResetSeeder(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     @Transactional
     public void run(String... args) {
-        availabilityRepository.deleteAllInBatch();
-        transportProviderRepository.deleteAllInBatch();
-        transportProfileRepository.deleteAllInBatch();
-        mobilityOptionRepository.deleteAllInBatch();
-        matchRepository.deleteAllInBatch();
-        eventCatalogRepository.deleteAllInBatch();
+        List<String> tables = jdbcTemplate.queryForList(
+                "SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename <> 'flyway_schema_history'",
+                String.class);
+        if (tables.isEmpty()) {
+            return;
+        }
+        String joined = String.join(", ", tables.stream().map(name -> '"' + name + '"').toList());
+        jdbcTemplate.execute("TRUNCATE TABLE " + joined + " RESTART IDENTITY CASCADE");
     }
 }
